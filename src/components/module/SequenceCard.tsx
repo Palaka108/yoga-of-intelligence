@@ -178,22 +178,39 @@ export default function SequenceCard({
                   </p>
                 )}
 
-                {/* Content: Video */}
-                {sequence.content_url && sequence.sequence_type.includes('video') && (
-                  <div className="rounded-xl overflow-hidden mb-4 aspect-video bg-sacred-deep">
-                    <video
-                      src={sequence.content_url}
-                      controls
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
+                {/* Pranayama Video + Breathing Guide — side by side */}
+                {sequence.content_url &&
+                  sequence.sequence_type === 'intro_video' &&
+                  sequence.title.toLowerCase().includes('pranayama') ? (
+                  <div className="flex flex-col lg:flex-row gap-4 mb-4">
+                    {/* Video — left side */}
+                    <div className="rounded-xl overflow-hidden bg-sacred-deep lg:flex-1 min-w-0">
+                      <div className="aspect-video">
+                        <video
+                          src={sequence.content_url}
+                          controls
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    {/* Breathing Guide — right side */}
+                    <div className="lg:w-[280px] lg:flex-shrink-0">
+                      <BoxBreathingGuide />
+                    </div>
                   </div>
-                )}
-
-                {/* Box Breathing Guide — shown for pranayama intro videos */}
-                {sequence.sequence_type === 'intro_video' &&
-                  sequence.title.toLowerCase().includes('pranayama') && (
-                    <BoxBreathingGuide />
+                ) : (
+                  /* Regular video (non-pranayama) */
+                  sequence.content_url && sequence.sequence_type.includes('video') && (
+                    <div className="rounded-xl overflow-hidden mb-4 aspect-video bg-sacred-deep">
+                      <video
+                        src={sequence.content_url}
+                        controls
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )
                 )}
 
                 {/* Content: Audio */}
