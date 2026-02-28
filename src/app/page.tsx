@@ -34,7 +34,7 @@ export default function SplashPage() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/videos/meditation-intro.mp4" type="video/mp4" />
+        <source src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/meditation-intro.mp4" type="video/mp4" />
       </video>
 
       {/* Gradient Overlay */}
