@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --sacred-black: #0a0a0f;
+    --sacred-deep: #0d0d1a;
+    --sacred-indigo: #1a1a3e;
+    --sacred-gold: #c9a84c;
+    --sacred-gold-light: #e8d48b;
+    --sacred-neon: #00d4ff;
+    --sacred-violet: #7c3aed;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--sacred-black);
+    color: #e0e0e0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(201, 168, 76, 0.3);
+    color: #fff;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--sacred-deep);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.3);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 168, 76, 0.5);
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply rounded-2xl border border-glass-border bg-glass-white backdrop-blur-xl;
+  }
+
+  .glass-panel-hover {
+    @apply glass-panel transition-all duration-300 hover:border-glass-border-light hover:bg-glass-white-10;
+  }
+
+  .gold-text {
+    @apply bg-gradient-gold bg-clip-text text-transparent;
+  }
+
+  .gold-border {
+    @apply border border-sacred-gold/30;
+  }
+
+  .sacred-glow {
+    box-shadow: 0 0 30px rgba(201, 168, 76, 0.15),
+                0 0 60px rgba(201, 168, 76, 0.05);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2),
+                0 0 40px rgba(0, 212, 255, 0.05);
+  }
+
+  .sequence-locked {
+    @apply opacity-40 pointer-events-none grayscale;
+  }
+
+  .sequence-active {
+    @apply ring-2 ring-sacred-gold/50 sacred-glow;
+  }
+
+  .sequence-completed {
+    @apply border-emerald-500/30 bg-emerald-500/5;
+  }
+
+  .sequence-awaiting {
+    @apply border-amber-500/30 bg-amber-500/5 animate-pulse-slow;
+  }
+
+  .avatar-glow {
+    @apply rounded-full;
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.4),
+                0 0 40px rgba(201, 168, 76, 0.2),
+                0 0 60px rgba(124, 58, 237, 0.1);
+  }
+
+  .btn-sacred {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl
+           bg-gradient-to-r from-sacred-gold to-sacred-gold-light
+           px-6 py-3 text-sm font-semibold text-sacred-black
+           transition-all duration-300
+           hover:shadow-lg hover:shadow-sacred-gold/20
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-glass {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl
+           border border-glass-border-light bg-glass-white-10
+           px-6 py-3 text-sm font-medium text-white/80
+           backdrop-blur-md transition-all duration-300
+           hover:bg-glass-white-20 hover:text-white
+           active:scale-95;
+  }
+
+  .input-sacred {
+    @apply w-full rounded-xl border border-glass-border bg-glass-white
+           px-4 py-3 text-white/90 backdrop-blur-md
+           placeholder:text-white/30
+           focus:border-sacred-gold/50 focus:outline-none focus:ring-1 focus:ring-sacred-gold/30
+           transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
