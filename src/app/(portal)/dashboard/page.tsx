@@ -96,17 +96,25 @@ export default function DashboardPage() {
         transition={{ duration: 0.6 }}
         className="mb-16"
       >
-        {/* Video Hero */}
-        <div className="relative rounded-3xl overflow-hidden glass-panel mb-8 aspect-video max-h-[400px]">
-          <video
-            className="w-full h-full object-cover"
-            poster="/images/hero-poster.jpg"
-            controls
-            playsInline
-          >
-            <source src="/videos/intro-splash.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-sacred-black/60 via-transparent to-transparent pointer-events-none" />
+        {/* Video in Glassmorphism Card */}
+        <div className="relative rounded-3xl overflow-hidden border border-white/15 bg-white/5 backdrop-blur-xl shadow-2xl mb-8">
+          <div className="aspect-video max-h-[420px]">
+            <video
+              className="w-full h-full object-cover"
+              controls
+              playsInline
+              preload="metadata"
+              poster=""
+            >
+              <source
+                src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/meditation-intro.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          {/* Subtle gradient at bottom for blending */}
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-sacred-black/40 via-transparent to-transparent pointer-events-none" />
         </div>
 
         {/* Welcome & Profile */}

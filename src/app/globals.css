@@ -139,7 +139,9 @@
   }
 }
 
-/* Breathing circle animation */
+/* ============================================
+   Breathing circle animation
+   ============================================ */
 .breathing-circle {
   animation: breathe 8s ease-in-out infinite;
 }
@@ -155,7 +157,9 @@
   }
 }
 
-/* Fade in animation */
+/* ============================================
+   Fade in animation
+   ============================================ */
 .animate-fade-in {
   animation: fadeIn 1s ease-out forwards;
 }
@@ -168,5 +172,193 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ============================================
+   Water Animation Background
+   Deep ocean / calm water surface effect
+   ============================================ */
+.water-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 30%, rgba(0, 60, 120, 0.4) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 70%, rgba(0, 80, 140, 0.3) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(10, 40, 80, 0.5) 0%, transparent 70%),
+    linear-gradient(180deg,
+      #04111d 0%,
+      #062033 20%,
+      #0a2a45 40%,
+      #0d2e4a 60%,
+      #081e35 80%,
+      #04111d 100%
+    );
+  overflow: hidden;
+}
+
+/* Caustic light patterns — layer 1 (large, slow) */
+.water-caustics {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  opacity: 0.07;
+}
+
+.water-caustics-1 {
+  background:
+    repeating-conic-gradient(
+      from 0deg at 25% 25%,
+      transparent 0deg,
+      rgba(100, 200, 255, 0.4) 3deg,
+      transparent 6deg
+    ),
+    repeating-conic-gradient(
+      from 45deg at 75% 60%,
+      transparent 0deg,
+      rgba(80, 180, 240, 0.3) 4deg,
+      transparent 8deg
+    );
+  animation: causticDrift1 20s ease-in-out infinite;
+  filter: blur(30px);
+}
+
+.water-caustics-2 {
+  background:
+    repeating-conic-gradient(
+      from 120deg at 60% 40%,
+      transparent 0deg,
+      rgba(60, 160, 220, 0.3) 2deg,
+      transparent 5deg
+    ),
+    repeating-conic-gradient(
+      from 200deg at 35% 75%,
+      transparent 0deg,
+      rgba(80, 200, 250, 0.25) 3deg,
+      transparent 7deg
+    );
+  animation: causticDrift2 25s ease-in-out infinite;
+  filter: blur(35px);
+  opacity: 0.05;
+}
+
+@keyframes causticDrift1 {
+  0%, 100% {
+    transform: translate(0%, 0%) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate(3%, -2%) rotate(2deg) scale(1.02);
+  }
+  50% {
+    transform: translate(-2%, 3%) rotate(-1deg) scale(0.98);
+  }
+  75% {
+    transform: translate(1%, 1%) rotate(1deg) scale(1.01);
+  }
+}
+
+@keyframes causticDrift2 {
+  0%, 100% {
+    transform: translate(0%, 0%) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate(-3%, 2%) rotate(-2deg) scale(1.03);
+  }
+  66% {
+    transform: translate(2%, -1%) rotate(1.5deg) scale(0.97);
+  }
+}
+
+/* Wave ripple overlay — subtle horizontal shimmer */
+.water-ripple {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(80, 180, 240, 0.02) 20%,
+      transparent 22%,
+      transparent 35%,
+      rgba(60, 160, 220, 0.03) 38%,
+      transparent 41%,
+      transparent 55%,
+      rgba(100, 200, 255, 0.02) 58%,
+      transparent 61%,
+      transparent 75%,
+      rgba(70, 170, 230, 0.02) 78%,
+      transparent 81%,
+      transparent 100%
+    );
+  animation: rippleShift 12s ease-in-out infinite;
+}
+
+@keyframes rippleShift {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) scaleY(1.02);
+    opacity: 1;
+  }
+}
+
+/* Floating light orbs — gentle underwater light spots */
+.water-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+
+.water-orb-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(0, 180, 220, 0.15) 0%, transparent 70%);
+  top: 10%;
+  left: 15%;
+  animation-duration: 14s;
+  animation-delay: 0s;
+}
+
+.water-orb-2 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(0, 140, 200, 0.12) 0%, transparent 70%);
+  top: 50%;
+  right: 10%;
+  animation-duration: 18s;
+  animation-delay: 3s;
+}
+
+.water-orb-3 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(100, 200, 255, 0.1) 0%, transparent 70%);
+  bottom: 15%;
+  left: 40%;
+  animation-duration: 16s;
+  animation-delay: 6s;
+}
+
+@keyframes orbFloat {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    opacity: 0.6;
+    transform: translate(20px, -15px) scale(1.1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translate(-10px, 10px) scale(0.95);
+  }
+  75% {
+    opacity: 0.7;
+    transform: translate(15px, 5px) scale(1.05);
   }
 }
