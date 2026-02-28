@@ -19,6 +19,7 @@ import {
 import type { SequenceStatus } from '@/types/database';
 import VideoUploader from './VideoUploader';
 import InstructorResponseView from './InstructorResponseView';
+import BoxBreathingGuide from './BoxBreathingGuide';
 
 interface SequenceData {
   id: string;
@@ -187,6 +188,12 @@ export default function SequenceCard({
                       className="w-full h-full object-cover"
                     />
                   </div>
+                )}
+
+                {/* Box Breathing Guide — shown for pranayama intro videos */}
+                {sequence.sequence_type === 'intro_video' &&
+                  sequence.title.toLowerCase().includes('pranayama') && (
+                    <BoxBreathingGuide />
                 )}
 
                 {/* Content: Audio */}

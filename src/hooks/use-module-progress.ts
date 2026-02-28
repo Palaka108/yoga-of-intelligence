@@ -61,6 +61,72 @@ export function useModuleProgress(moduleId: string, userId: string | undefined) 
     fetchProgress();
   }, [fetchProgress]);
 
+  // Notify admin when a step is completed
+  const notifyAdmin = useCallback(
+    async (sequenceId: string) => {
+      if (!userId) return;
+      const supabase = createClient();
+
+      // Get user info
+      const { data: { user } } = await supabase.auth.getUser();
+      const userEmail = user?.email ?? 'unknown';
+
+      // Get user profile name
+      const { data: rawProfile } = await supabase
+        .from('yoi_users')
+        .select('full_name')
+        .eq('id', userId)
+        .single();
+      const profile = rawProfile as unknown as { full_name: string | null } | null;
+      const userName = profile?.full_name ?? userEmail;
+
+      // Get module title
+      const { data: rawModule } = await supabase
+        .from('yoi_modules')
+        .select('title')
+        .eq('id', moduleId)
+        .single();
+      const mod = rawModule as unknown as { title: string } | null;
+
+      // Get sequence title
+      const { data: rawSeq } = await supabase
+        .from('yoi_module_sequences')
+        .select('title')
+        .eq('id', sequenceId)
+        .single();
+      const seq = rawSeq as unknown as { title: string } | null;
+
+      // Insert notification into database
+      await (supabase.from('yoi_notifications') as any).insert({
+        type: 'step_completed',
+        user_id: userId,
+        user_email: userEmail,
+        user_name: userName,
+        module_id: moduleId,
+        module_title: mod?.title ?? 'Unknown Module',
+        sequence_id: sequenceId,
+        sequence_title: seq?.title ?? 'Unknown Step',
+        message: `${userName} completed "${seq?.title}" in ${mod?.title}`,
+      });
+
+      // Also fire n8n webhook (non-blocking)
+      fetch('https://palaka.app.n8n.cloud/webhook/yoi-step-completed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userName,
+          userEmail,
+          moduleTitle: mod?.title ?? 'Unknown Module',
+          sequenceTitle: seq?.title ?? 'Unknown Step',
+          completedAt: new Date().toISOString(),
+        }),
+      }).catch(() => {
+        // Non-blocking — don't fail the completion if webhook is down
+      });
+    },
+    [userId, moduleId]
+  );
+
   const completeSequence = useCallback(
     async (sequenceId: string) => {
       if (!userId) return;
@@ -98,9 +164,12 @@ export function useModuleProgress(moduleId: string, userId: string | undefined) 
         }
       }
 
+      // Notify admin (non-blocking)
+      notifyAdmin(sequenceId);
+
       await fetchProgress();
     },
-    [userId, moduleId, moduleProgress, fetchProgress]
+    [userId, moduleId, moduleProgress, fetchProgress, notifyAdmin]
   );
 
   const setAwaitingResponse = useCallback(
