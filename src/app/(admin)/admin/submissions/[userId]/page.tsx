@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Upload, Send, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Upload, Send, CheckCircle, Mic, Video } from 'lucide-react';
 import Link from 'next/link';
 import { useDropzone } from 'react-dropzone';
 import { createClient } from '@/lib/supabase-client';
@@ -35,6 +35,8 @@ export default function SubmissionDetailPage() {
   const [student, setStudent] = useState<StudentInfo | null>(null);
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [responseVideoFile, setResponseVideoFile] = useState<File | null>(null);
+  const [responseAudioFile, setResponseAudioFile] = useState<File | null>(null);
+  const [responseType, setResponseType] = useState<'video' | 'audio'>('video');
   const [message, setMessage] = useState('');
   const [meditationUrl, setMeditationUrl] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -66,29 +68,41 @@ export default function SubmissionDetailPage() {
     fetchData();
   }, [studentUserId, submissionId]);
 
-  const onDrop = useCallback((files: File[]) => {
+  const onVideoDrop = useCallback((files: File[]) => {
     if (files[0]) setResponseVideoFile(files[0]);
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
+  const onAudioDrop = useCallback((files: File[]) => {
+    if (files[0]) setResponseAudioFile(files[0]);
+  }, []);
+
+  const { getRootProps: getVideoRootProps, getInputProps: getVideoInputProps } = useDropzone({
+    onDrop: onVideoDrop,
     accept: { 'video/*': ['.mp4', '.webm', '.mov'] },
     maxFiles: 1,
     maxSize: 200 * 1024 * 1024,
   });
 
+  const { getRootProps: getAudioRootProps, getInputProps: getAudioInputProps } = useDropzone({
+    onDrop: onAudioDrop,
+    accept: { 'audio/*': ['.mp3', '.webm', '.ogg', '.m4a', '.wav'] },
+    maxFiles: 1,
+    maxSize: 50 * 1024 * 1024,
+  });
+
   const handleSubmitResponse = async () => {
-    if (!responseVideoFile || !submission || !profile) return;
+    const hasFile = responseType === 'video' ? responseVideoFile : responseAudioFile;
+    if (!hasFile || !submission || !profile) return;
     setUploading(true);
 
     const supabase = createClient();
-
-    // Upload response video
-    const filePath = `instructor/${studentUserId}/${submission.module_id}/${submission.sequence_id}/${Date.now()}.webm`;
+    const ext = responseType === 'video' ? 'webm' : 'webm';
+    const folder = responseType === 'video' ? 'responses' : 'audio-responses';
+    const filePath = `instructor/${studentUserId}/${submission.module_id}/${submission.sequence_id}/${folder}/${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from('yoi-videos')
-      .upload(filePath, responseVideoFile);
+      .upload(filePath, hasFile);
 
     if (uploadError) {
       setUploading(false);
@@ -99,18 +113,24 @@ export default function SubmissionDetailPage() {
       data: { publicUrl },
     } = supabase.storage.from('yoi-videos').getPublicUrl(filePath);
 
-    // Call the admin unlock function
-    const { error } = await (supabase as any).rpc('yoi_admin_unlock_sequence', {
-      p_user_id: studentUserId,
-      p_module_id: submission.module_id,
-      p_sequence_id: submission.sequence_id,
-      p_submission_id: submission.id,
-      p_response_video_url: publicUrl,
-      p_message: message || null,
-      p_next_meditation_url: meditationUrl || null,
+    // Call the API endpoint (supports both video and audio responses)
+    const res = await fetch('/api/admin/unlock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: studentUserId,
+        module_id: submission.module_id,
+        sequence_id: submission.sequence_id,
+        submission_id: submission.id,
+        instructor_id: profile.id,
+        response_video_url: responseType === 'video' ? publicUrl : null,
+        response_audio_url: responseType === 'audio' ? publicUrl : null,
+        message: message || null,
+        next_meditation_url: meditationUrl || null,
+      }),
     });
 
-    if (!error) {
+    if (res.ok) {
       setSuccess(true);
     }
 
@@ -185,19 +205,69 @@ export default function SubmissionDetailPage() {
             Your Response
           </h2>
 
-          {/* Response video upload */}
+          {/* Response type toggle */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setResponseType('video')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
+                responseType === 'video'
+                  ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
+                  : 'text-white/40 hover:text-white/60'
+              }`}
+            >
+              <Video size={14} /> Video
+            </button>
+            <button
+              onClick={() => setResponseType('audio')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
+                responseType === 'audio'
+                  ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
+                  : 'text-white/40 hover:text-white/60'
+              }`}
+            >
+              <Mic size={14} /> Audio
+            </button>
+          </div>
+
+          {/* Response file upload */}
           <div>
             <label className="block text-xs text-white/40 mb-2">
-              Response Video *
+              Response {responseType === 'video' ? 'Video' : 'Audio'} *
             </label>
-            {responseVideoFile ? (
+            {responseType === 'video' ? (
+              responseVideoFile ? (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 text-sm text-emerald-400">
+                    <CheckCircle size={14} />
+                    <span>{responseVideoFile.name}</span>
+                  </div>
+                  <button
+                    onClick={() => setResponseVideoFile(null)}
+                    className="text-xs text-white/30 hover:text-red-400"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div
+                  {...getVideoRootProps()}
+                  className="border-2 border-dashed border-glass-border rounded-xl p-6 text-center cursor-pointer hover:border-sacred-gold/30 transition-colors"
+                >
+                  <input {...getVideoInputProps()} />
+                  <Upload size={24} className="mx-auto text-white/20 mb-2" />
+                  <p className="text-sm text-white/40">
+                    Drop your response video or click to select
+                  </p>
+                </div>
+              )
+            ) : responseAudioFile ? (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 text-sm text-emerald-400">
                   <CheckCircle size={14} />
-                  <span>{responseVideoFile.name}</span>
+                  <span>{responseAudioFile.name}</span>
                 </div>
                 <button
-                  onClick={() => setResponseVideoFile(null)}
+                  onClick={() => setResponseAudioFile(null)}
                   className="text-xs text-white/30 hover:text-red-400"
                 >
                   Remove
@@ -205,13 +275,13 @@ export default function SubmissionDetailPage() {
               </div>
             ) : (
               <div
-                {...getRootProps()}
+                {...getAudioRootProps()}
                 className="border-2 border-dashed border-glass-border rounded-xl p-6 text-center cursor-pointer hover:border-sacred-gold/30 transition-colors"
               >
-                <input {...getInputProps()} />
-                <Upload size={24} className="mx-auto text-white/20 mb-2" />
+                <input {...getAudioInputProps()} />
+                <Mic size={24} className="mx-auto text-white/20 mb-2" />
                 <p className="text-sm text-white/40">
-                  Drop your response video or click to select
+                  Drop your audio response (.mp3, .m4a, .ogg) or click to select
                 </p>
               </div>
             )}
@@ -248,7 +318,7 @@ export default function SubmissionDetailPage() {
           {/* Submit */}
           <button
             onClick={handleSubmitResponse}
-            disabled={!responseVideoFile || uploading}
+            disabled={!(responseType === 'video' ? responseVideoFile : responseAudioFile) || uploading}
             className="btn-sacred w-full"
           >
             {uploading ? (

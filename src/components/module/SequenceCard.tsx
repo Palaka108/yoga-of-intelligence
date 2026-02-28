@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play,
@@ -15,11 +15,15 @@ import {
   Heart,
   Activity,
   MessageCircle,
+  Pause,
+  Target,
 } from 'lucide-react';
 import type { SequenceStatus } from '@/types/database';
 import VideoUploader from './VideoUploader';
 import InstructorResponseView from './InstructorResponseView';
 import BoxBreathingGuide from './BoxBreathingGuide';
+import GoalSettingForm from './GoalSettingForm';
+import { useRecorderStore } from '@/stores/recorder-store';
 
 interface SequenceData {
   id: string;
@@ -55,6 +59,8 @@ const typeIcons: Record<string, React.ReactNode> = {
   instructor_response: <MessageCircle size={16} />,
   movement_integration: <Activity size={16} />,
   love_integration: <Heart size={16} />,
+  reflection_prompt: <Pause size={16} />,
+  goal_setting: <Target size={16} />,
 };
 
 const statusStyles: Record<SequenceStatus, string> = {
@@ -242,6 +248,16 @@ export default function SequenceCard({
                   </div>
                 )}
 
+                {/* Reflection Prompt — contemplative card with mic nudge */}
+                {sequence.sequence_type === 'reflection_prompt' && status === 'unlocked' && (
+                  <ReflectionNudge />
+                )}
+
+                {/* Goal Setting Form */}
+                {sequence.sequence_type === 'goal_setting' && status === 'unlocked' && userId && (
+                  <GoalSettingForm userId={userId} onComplete={onComplete} />
+                )}
+
                 {/* Video Upload Component */}
                 {sequence.requires_upload && status === 'unlocked' && userId && (
                   <VideoUploader
@@ -271,8 +287,8 @@ export default function SequenceCard({
                   </div>
                 )}
 
-                {/* Complete button */}
-                {status === 'unlocked' && !sequence.requires_upload && (
+                {/* Complete button — hide for goal_setting (form handles its own completion) */}
+                {status === 'unlocked' && !sequence.requires_upload && sequence.sequence_type !== 'goal_setting' && (
                   <button onClick={handleComplete} className="btn-sacred mt-2 w-full">
                     <CheckCircle size={16} />
                     I have completed this step
@@ -292,5 +308,25 @@ export default function SequenceCard({
         </AnimatePresence>
       </div>
     </motion.div>
+  );
+}
+
+/** Small sub-component that pulses the global voice recorder mic */
+function ReflectionNudge() {
+  const { triggerPulse } = useRecorderStore();
+
+  useEffect(() => {
+    const timer = setTimeout(() => triggerPulse(), 1500);
+    return () => clearTimeout(timer);
+  }, [triggerPulse]);
+
+  return (
+    <div className="flex items-center gap-3 text-white/40 text-xs mb-2 animate-fade-in">
+      <div className="w-1.5 h-1.5 rounded-full bg-sacred-gold/50 animate-pulse" />
+      <span>
+        Use the <span className="text-sacred-gold/70">mic button</span> at the
+        bottom-right to record a voice reflection anytime.
+      </span>
+    </div>
   );
 }

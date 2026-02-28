@@ -6,7 +6,8 @@ import { MessageCircle } from 'lucide-react';
 
 interface InstructorResponse {
   id: string;
-  response_video_url: string;
+  response_video_url: string | null;
+  response_audio_url: string | null;
   message: string | null;
   next_meditation_url: string | null;
   created_at: string;
@@ -69,19 +70,35 @@ export default function InstructorResponseView({
   return (
     <div className="space-y-4">
       {/* Custom Response Video */}
-      <div>
-        <p className="text-xs text-sacred-gold/60 uppercase tracking-widest mb-2">
-          Your Personal Response
-        </p>
-        <div className="rounded-xl overflow-hidden aspect-video bg-sacred-deep">
-          <video
-            src={response.response_video_url}
+      {response.response_video_url && (
+        <div>
+          <p className="text-xs text-sacred-gold/60 uppercase tracking-widest mb-2">
+            Your Personal Response
+          </p>
+          <div className="rounded-xl overflow-hidden aspect-video bg-sacred-deep">
+            <video
+              src={response.response_video_url}
+              controls
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Custom Response Audio */}
+      {response.response_audio_url && !response.response_video_url && (
+        <div>
+          <p className="text-xs text-sacred-gold/60 uppercase tracking-widest mb-2">
+            Your Personal Response
+          </p>
+          <audio
+            src={response.response_audio_url}
             controls
-            playsInline
-            className="w-full h-full object-cover"
+            className="w-full"
           />
         </div>
-      </div>
+      )}
 
       {/* Message */}
       {response.message && (

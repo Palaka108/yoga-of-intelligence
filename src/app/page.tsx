@@ -1,19 +1,25 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAudioStore } from '@/stores/audio-store';
+
+const SONG_URL =
+  'https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/intro-qualiavibe.mp3';
+const VIDEO_URL =
+  'https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/water-background.mp4';
 
 export default function SplashPage() {
   const [entered, setEntered] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const router = useRouter();
 
   const handleEnter = useCallback(() => {
-    // Start playing the intro song
-    if (audioRef.current) {
-      audioRef.current.volume = 0.4;
-      audioRef.current.play().catch(() => {});
-    }
+    const store = useAudioStore.getState();
+    store.initAudio(SONG_URL);
+    store.audioElement?.play().then(() => {
+      store.setPlaying(true);
+      store.setInteracted();
+    }).catch(() => {});
     setEntered(true);
   }, []);
 
@@ -23,9 +29,6 @@ export default function SplashPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Audio — intro song on Enter click */}
-      <audio ref={audioRef} src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/intro-qualiavibe.mp3" loop preload="auto" />
-
       {/* Water Video Background — same calm waves as QualiaVibe */}
       <video
         autoPlay
@@ -34,7 +37,7 @@ export default function SplashPage() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/water-background.mp4" type="video/mp4" />
+        <source src={VIDEO_URL} type="video/mp4" />
       </video>
 
       {/* Gradient Overlay — soft rose/pink tint over water */}

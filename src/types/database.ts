@@ -169,7 +169,8 @@ export interface Database {
           user_id: string;
           module_id: string;
           sequence_id: string;
-          response_video_url: string;
+          response_video_url: string | null;
+          response_audio_url: string | null;
           message: string | null;
           next_meditation_url: string | null;
           created_at: string;
@@ -180,14 +181,70 @@ export interface Database {
           user_id: string;
           module_id: string;
           sequence_id: string;
-          response_video_url: string;
+          response_video_url?: string | null;
+          response_audio_url?: string | null;
           message?: string | null;
           next_meditation_url?: string | null;
         };
         Update: {
-          response_video_url?: string;
+          response_video_url?: string | null;
+          response_audio_url?: string | null;
           message?: string | null;
           next_meditation_url?: string | null;
+        };
+      };
+      yoi_voice_reflections: {
+        Row: {
+          id: string;
+          user_id: string;
+          module_id: string | null;
+          sequence_id: string | null;
+          audio_url: string;
+          transcript: string | null;
+          duration_seconds: number;
+          tags: Record<string, unknown> | null;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          module_id?: string | null;
+          sequence_id?: string | null;
+          audio_url: string;
+          transcript?: string | null;
+          duration_seconds: number;
+          tags?: Record<string, unknown> | null;
+        };
+        Update: {
+          transcript?: string | null;
+          tags?: Record<string, unknown> | null;
+        };
+      };
+      yoi_user_goals: {
+        Row: {
+          id: string;
+          user_id: string;
+          goal_text: string;
+          small_action: string | null;
+          target_date: string;
+          status: 'active' | 'completed' | 'abandoned';
+          progress_notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          goal_text: string;
+          small_action?: string | null;
+          target_date: string;
+          status?: 'active' | 'completed' | 'abandoned';
+          progress_notes?: string | null;
+        };
+        Update: {
+          goal_text?: string;
+          small_action?: string | null;
+          target_date?: string;
+          status?: 'active' | 'completed' | 'abandoned';
+          progress_notes?: string | null;
         };
       };
       shabda_articles: {

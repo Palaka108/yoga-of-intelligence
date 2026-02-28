@@ -16,14 +16,15 @@ export async function POST(request: NextRequest) {
       sequence_id,
       submission_id,
       response_video_url,
+      response_audio_url,
       message,
       next_meditation_url,
       instructor_id,
     } = body;
 
-    if (!user_id || !module_id || !sequence_id || !submission_id || !response_video_url) {
+    if (!user_id || !module_id || !sequence_id || !submission_id || (!response_video_url && !response_audio_url)) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields — need at least a video or audio response' },
         { status: 400 }
       );
     }
@@ -55,7 +56,8 @@ export async function POST(request: NextRequest) {
         user_id,
         module_id,
         sequence_id,
-        response_video_url,
+        response_video_url: response_video_url || null,
+        response_audio_url: response_audio_url || null,
         message: message || null,
         next_meditation_url: next_meditation_url || null,
       });

@@ -3,10 +3,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Play, Lock, CheckCircle, Clock } from 'lucide-react';
+import { Play, Lock, CheckCircle, Clock, ChevronRight } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '@/lib/supabase-client';
+import GoalsWidget from '@/components/dashboard/GoalsWidget';
 
+/* ============================================
+   Types
+   ============================================ */
 interface Module {
   id: string;
   title: string;
@@ -23,6 +27,48 @@ interface ModuleWithProgress extends Module {
   currentStatus: string;
 }
 
+/* ============================================
+   Sky Background — looping ambient video
+   ============================================ */
+function SkyBackground() {
+  return (
+    <div className="sky-bg-container" aria-hidden="true">
+      {/*
+        Sky video: Replace src with your compressed sky/cloud loop.
+        Use a short (10-30s) MP4, under 5MB, with gentle cloud drift.
+        Fallback: CSS gradient if video fails to load.
+      */}
+      <video
+        className="sky-bg-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster=""
+      >
+        {/* Replace with your actual sky video URL */}
+        <source
+          src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/bg/sky-loop.mp4"
+          type="video/mp4"
+        />
+      </video>
+
+      {/* Fallback animated gradient if video doesn't load */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-[#0a1628] via-[#0f1d35] to-[#0a0a0f]"
+        style={{ zIndex: -1 }}
+      />
+
+      {/* Depth overlay — darkens edges, adds atmosphere */}
+      <div className="sky-bg-overlay" />
+    </div>
+  );
+}
+
+/* ============================================
+   Dashboard Page — Meditation Portal
+   ============================================ */
 export default function DashboardPage() {
   const { user, profile, loading: userLoading } = useUser();
   const [modules, setModules] = useState<ModuleWithProgress[]>([]);
@@ -79,28 +125,37 @@ export default function DashboardPage() {
     fetchModules();
   }, [user]);
 
+  /* Loading state */
   if (userLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-sacred-gold/30 border-t-sacred-gold rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center relative z-10">
+        <SkyBackground />
+        <div className="w-10 h-10 border-2 border-sacred-gold/30 border-t-sacred-gold rounded-full animate-spin" />
       </div>
     );
   }
 
+  const firstName = profile?.full_name?.split(' ')[0] ?? 'Seeker';
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Hero Section with Video */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-16"
-      >
-        {/* Video in Glassmorphism Card */}
-        <div className="relative rounded-3xl overflow-hidden border border-white/15 bg-white/5 backdrop-blur-xl shadow-2xl mb-8">
-          <div className="aspect-video max-h-[420px] bg-sacred-black flex items-center justify-center">
+    <>
+      {/* Immersive sky background */}
+      <SkyBackground />
+
+      {/* Main content — scrollable, above background */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center px-4 py-6 sm:py-10">
+
+        {/* ========== Glass Portal Panel ========== */}
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="glass-portal w-[90%] max-w-[600px] p-5 sm:p-8 flex flex-col items-center gap-6"
+        >
+
+          {/* ---- Vertical Video ---- */}
+          <div className="video-portrait-container w-full">
             <video
-              className="w-full h-full object-contain"
               controls
               playsInline
               preload="metadata"
@@ -111,136 +166,162 @@ export default function DashboardPage() {
               />
               Your browser does not support the video tag.
             </video>
-          </div>
-          {/* Subtle gradient at bottom for blending */}
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-sacred-black/40 via-transparent to-transparent pointer-events-none" />
-        </div>
 
-        {/* Welcome & Profile */}
-        <div className="flex items-start gap-6">
-          {/* Avatar with glow */}
-          <div className="shrink-0">
-            {profile?.avatar_url ? (
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-sacred-gold/20 blur-xl scale-150" />
-                <img
-                  src={profile.avatar_url}
-                  alt={profile.full_name ?? ''}
-                  className="relative w-20 h-20 rounded-full avatar-glow object-cover border-2 border-sacred-gold/30"
-                />
-              </div>
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-sacred-indigo border-2 border-sacred-gold/30 flex items-center justify-center avatar-glow">
-                <span className="text-2xl font-display text-sacred-gold">
-                  {profile?.full_name?.[0] ?? '?'}
-                </span>
-              </div>
-            )}
+            {/* Bottom gradient fade over video */}
+            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[rgba(10,15,30,0.7)] to-transparent pointer-events-none rounded-b-2xl" />
           </div>
 
-          <div>
-            <h1 className="font-display text-3xl md:text-4xl font-light text-white/90 mb-2">
-              Welcome, {profile?.full_name?.split(' ')[0] ?? 'Seeker'}
-            </h1>
-            <p className="text-white/40 max-w-xl leading-relaxed">
+          {/* ---- Welcome Text ---- */}
+          <div className="text-center w-full">
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.7 }}
+              className="font-display text-3xl sm:text-4xl font-light text-white/90 leading-tight mb-3"
+            >
+              Welcome, {firstName}
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.7 }}
+              className="text-white/40 text-sm sm:text-base leading-relaxed max-w-md mx-auto font-body"
+            >
               The journey through consciousness is not about reaching an ideal state,
               but recognizing what is already possible — and surrendering what is impossible
-              for the individual to control. The witness observes all three.
-            </p>
-          </div>
-        </div>
-      </motion.section>
+              for the individual to control.
+            </motion.p>
 
-      {/* Modules Grid */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
-      >
-        <h2 className="font-display text-2xl text-white/70 mb-8">Your Modules</h2>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {modules.map((module, index) => (
+            {/* Decorative divider */}
             <motion.div
-              key={module.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index, duration: 0.4 }}
-            >
-              <Link href={`/module/${module.id}`}>
-                <div
-                  className={`glass-panel-hover p-6 h-full flex flex-col ${
-                    module.currentStatus === 'completed' ? 'sequence-completed' : ''
-                  } ${module.currentStatus === 'awaiting' ? 'sequence-awaiting' : ''}`}
-                >
-                  {/* Module number */}
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs text-sacred-gold/60 uppercase tracking-widest">
-                      Module {module.module_order}
-                    </span>
-                    {module.currentStatus === 'completed' && (
-                      <CheckCircle size={18} className="text-emerald-400" />
-                    )}
-                    {module.currentStatus === 'awaiting' && (
-                      <Clock size={18} className="text-amber-400" />
-                    )}
-                    {module.currentStatus === 'not_started' && index > 0 && (
-                      <Lock size={18} className="text-white/20" />
-                    )}
-                  </div>
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+              className="mt-5 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-sacred-gold/40 to-transparent"
+            />
+          </div>
 
-                  {/* Title */}
-                  <h3 className="font-display text-xl text-white/90 mb-1">
-                    {module.title}
-                  </h3>
-                  {module.subtitle && (
-                    <p className="text-sm text-sacred-gold/60 mb-3">{module.subtitle}</p>
-                  )}
-
-                  {/* Description */}
-                  <p className="text-sm text-white/40 mb-6 flex-1 line-clamp-3">
-                    {module.description}
-                  </p>
-
-                  {/* Progress bar */}
-                  <div className="mt-auto">
-                    <div className="flex items-center justify-between text-xs text-white/30 mb-2">
-                      <span>Progress</span>
-                      <span>
-                        {module.completedSequences}/{module.total_sequences}
+          {/* ---- Module Cards ---- */}
+          <div className="w-full flex flex-col gap-3 mt-1">
+            {modules.map((module, index) => (
+              <motion.div
+                key={module.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 + index * 0.12, duration: 0.5 }}
+              >
+                <Link href={`/module/${module.id}`} className="block">
+                  <div
+                    className={`glass-portal-inner p-4 sm:p-5 flex flex-col gap-3 ${
+                      module.currentStatus === 'completed' ? 'border-emerald-500/20' : ''
+                    } ${module.currentStatus === 'awaiting' ? 'border-amber-500/20' : ''}`}
+                  >
+                    {/* Top row: module label + status icon */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] sm:text-xs text-sacred-gold/50 uppercase tracking-[0.2em] font-body">
+                        Module {module.module_order}
                       </span>
-                    </div>
-                    <div className="h-1 rounded-full bg-glass-white overflow-hidden">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-gold"
-                        initial={{ width: 0 }}
-                        animate={{
-                          width: `${(module.completedSequences / module.total_sequences) * 100}%`,
-                        }}
-                        transition={{ delay: 0.5 + index * 0.1, duration: 0.8 }}
-                      />
-                    </div>
-                  </div>
 
-                  {/* CTA */}
-                  <div className="mt-4 flex items-center gap-2 text-sacred-gold text-sm">
-                    <Play size={14} />
-                    <span>
-                      {module.currentStatus === 'completed'
-                        ? 'Review'
-                        : module.currentStatus === 'awaiting'
-                        ? 'Awaiting Response'
-                        : module.currentStatus === 'in_progress'
-                        ? 'Continue'
-                        : 'Begin'}
-                    </span>
+                      {module.currentStatus === 'completed' && (
+                        <CheckCircle size={16} className="text-emerald-400/80" />
+                      )}
+                      {module.currentStatus === 'awaiting' && (
+                        <Clock size={16} className="text-amber-400/80 animate-pulse-slow" />
+                      )}
+                      {module.currentStatus === 'not_started' && index > 0 && (
+                        <Lock size={14} className="text-white/15" />
+                      )}
+                    </div>
+
+                    {/* Title + subtitle */}
+                    <div>
+                      <h3 className="font-display text-lg sm:text-xl text-white/90 leading-snug">
+                        {module.title}
+                      </h3>
+                      {module.subtitle && (
+                        <p className="text-xs text-sacred-gold/40 mt-0.5">{module.subtitle}</p>
+                      )}
+                    </div>
+
+                    {/* Progress bar */}
+                    <div>
+                      <div className="flex items-center justify-between text-[10px] text-white/25 mb-1.5 font-body">
+                        <span>Progress</span>
+                        <span>
+                          {module.completedSequences}/{module.total_sequences}
+                        </span>
+                      </div>
+                      <div className="h-[3px] rounded-full bg-white/5 overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-gradient-to-r from-sacred-gold/80 to-sacred-gold-light/60"
+                          initial={{ width: 0 }}
+                          animate={{
+                            width: `${(module.completedSequences / module.total_sequences) * 100}%`,
+                          }}
+                          transition={{ delay: 1.2 + index * 0.1, duration: 0.8 }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* CTA row */}
+                    <div className="flex items-center justify-between mt-1">
+                      <div className="flex items-center gap-1.5 text-sacred-gold text-xs sm:text-sm font-body">
+                        <Play size={12} />
+                        <span>
+                          {module.currentStatus === 'completed'
+                            ? 'Review'
+                            : module.currentStatus === 'awaiting'
+                            ? 'Awaiting Response'
+                            : module.currentStatus === 'in_progress'
+                            ? 'Continue'
+                            : 'Begin'}
+                        </span>
+                      </div>
+                      <ChevronRight size={14} className="text-white/15" />
+                    </div>
                   </div>
-                </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* ---- Goals Widget ---- */}
+          {user && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.3, duration: 0.5 }}
+              className="w-full"
+            >
+              <GoalsWidget userId={user.id} />
+            </motion.div>
+          )}
+
+          {/* ---- Primary CTA (Begin Module 1) ---- */}
+          {modules.length > 0 && modules[0].currentStatus !== 'completed' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4, duration: 0.5 }}
+              className="w-full mt-2"
+            >
+              <Link href={`/module/${modules[0].id}`} className="block">
+                <button className="btn-sacred w-full text-sm sm:text-base py-3.5 rounded-2xl">
+                  {modules[0].currentStatus === 'in_progress'
+                    ? 'Continue Your Practice'
+                    : modules[0].currentStatus === 'awaiting'
+                    ? 'View Module 1'
+                    : 'Begin Module 1'}
+                </button>
               </Link>
             </motion.div>
-          ))}
-        </div>
-      </motion.section>
-    </div>
+          )}
+        </motion.div>
+
+        {/* Bottom breathing spacer */}
+        <div className="h-12 sm:h-20" />
+      </div>
+    </>
   );
 }

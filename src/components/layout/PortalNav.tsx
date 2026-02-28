@@ -11,7 +11,7 @@ import { getInitials } from '@/lib/utils';
 
 export default function PortalNav() {
   const { profile } = useUser();
-  const { isPlaying, togglePlay } = useAudioStore();
+  const { isPlaying, isMuted, toggleMute } = useAudioStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
@@ -39,11 +39,11 @@ export default function PortalNav() {
           <div className="flex items-center gap-3">
             {/* Audio toggle */}
             <button
-              onClick={togglePlay}
+              onClick={toggleMute}
               className="p-2 rounded-lg text-white/40 hover:text-sacred-gold transition-colors"
-              title={isPlaying ? 'Mute ambient audio' : 'Play ambient audio'}
+              title={isMuted ? 'Unmute Gita 3.27' : 'Mute Gita 3.27'}
             >
-              {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              {isPlaying && !isMuted ? <Volume2 size={18} /> : <VolumeX size={18} />}
             </button>
 
             {/* Profile */}

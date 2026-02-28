@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Users, Video, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Users, Video, Clock, CheckCircle, AlertCircle, Mic } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { useUser } from '@/hooks/use-user';
 
@@ -23,9 +23,21 @@ interface SubmissionRow {
   sequence_title: string;
 }
 
+interface VoiceReflection {
+  id: string;
+  user_id: string;
+  audio_url: string;
+  duration_seconds: number;
+  created_at: string;
+  user_name: string;
+  module_title: string | null;
+  sequence_title: string | null;
+}
+
 export default function AdminDashboard() {
   const { profile, loading: userLoading } = useUser();
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
+  const [reflections, setReflections] = useState<VoiceReflection[]>([]);
   const [stats, setStats] = useState({
     totalUsers: 0,
     pendingSubmissions: 0,
@@ -33,6 +45,7 @@ export default function AdminDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'pending' | 'reviewed' | 'all'>('pending');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'reflections'>('submissions');
 
   useEffect(() => {
     if (!profile || (profile.role !== 'admin' && profile.role !== 'instructor')) return;
@@ -121,6 +134,69 @@ export default function AdminDashboard() {
         setSubmissions(enriched);
       }
 
+      // Fetch voice reflections
+      const { data: reflectionData } = await supabase
+        .from('yoi_voice_reflections')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (reflectionData) {
+        const refs = reflectionData as unknown as Array<{
+          id: string;
+          user_id: string;
+          module_id: string | null;
+          sequence_id: string | null;
+          audio_url: string;
+          duration_seconds: number;
+          created_at: string;
+        }>;
+
+        const enrichedRefs = await Promise.all(
+          refs.map(async (ref) => {
+            const { data: userData } = await supabase
+              .from('yoi_users')
+              .select('full_name')
+              .eq('id', ref.user_id)
+              .single();
+
+            let moduleTitle: string | null = null;
+            let sequenceTitle: string | null = null;
+
+            if (ref.module_id) {
+              const { data: modData } = await supabase
+                .from('yoi_modules')
+                .select('title')
+                .eq('id', ref.module_id)
+                .single();
+              moduleTitle = (modData as Record<string, string> | null)?.title ?? null;
+            }
+
+            if (ref.sequence_id) {
+              const { data: seqData } = await supabase
+                .from('yoi_module_sequences')
+                .select('title')
+                .eq('id', ref.sequence_id)
+                .single();
+              sequenceTitle = (seqData as Record<string, string> | null)?.title ?? null;
+            }
+
+            return {
+              id: ref.id,
+              user_id: ref.user_id,
+              audio_url: ref.audio_url,
+              duration_seconds: ref.duration_seconds,
+              created_at: ref.created_at,
+              user_name: (userData as Record<string, string> | null)?.full_name ?? 'Unknown',
+              module_title: moduleTitle,
+              sequence_title: sequenceTitle,
+            } as VoiceReflection;
+          })
+        );
+
+        setReflections(enrichedRefs);
+      }
+
       setLoading(false);
     }
 
@@ -164,90 +240,168 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-2 mb-6">
-        {(['pending', 'reviewed', 'all'] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-              filter === f
-                ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
-                : 'text-white/40 hover:text-white/60'
-            }`}
-          >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
-          </button>
-        ))}
+      {/* Tab Navigation */}
+      <div className="flex gap-4 mb-6 border-b border-glass-border pb-3">
+        <button
+          onClick={() => setActiveTab('submissions')}
+          className={`flex items-center gap-2 px-3 py-1.5 text-sm transition-colors ${
+            activeTab === 'submissions'
+              ? 'text-sacred-gold border-b-2 border-sacred-gold -mb-[13px] pb-[11px]'
+              : 'text-white/40 hover:text-white/60'
+          }`}
+        >
+          <Video size={14} /> Video Submissions
+        </button>
+        <button
+          onClick={() => setActiveTab('reflections')}
+          className={`flex items-center gap-2 px-3 py-1.5 text-sm transition-colors ${
+            activeTab === 'reflections'
+              ? 'text-sacred-gold border-b-2 border-sacred-gold -mb-[13px] pb-[11px]'
+              : 'text-white/40 hover:text-white/60'
+          }`}
+        >
+          <Mic size={14} /> Voice Reflections
+          {reflections.length > 0 && (
+            <span className="bg-sacred-gold/20 text-sacred-gold text-[10px] px-1.5 py-0.5 rounded-full">
+              {reflections.length}
+            </span>
+          )}
+        </button>
       </div>
+
+      {/* Voice Reflections Tab */}
+      {activeTab === 'reflections' && (
+        <div className="space-y-3">
+          {reflections.length === 0 && (
+            <div className="glass-panel p-8 text-center">
+              <Mic size={32} className="mx-auto text-white/10 mb-3" />
+              <p className="text-white/30">No voice reflections yet</p>
+            </div>
+          )}
+
+          {reflections.map((ref, i) => (
+            <motion.div
+              key={ref.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-panel p-4 space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-sacred-indigo flex items-center justify-center text-xs text-sacred-gold">
+                    {ref.user_name[0]}
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/90">{ref.user_name}</p>
+                    <p className="text-[10px] text-white/30">
+                      {ref.module_title && ref.sequence_title
+                        ? `${ref.module_title} — ${ref.sequence_title}`
+                        : ref.module_title ?? 'General reflection'}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-white/30">
+                    {new Date(ref.created_at).toLocaleDateString()}
+                  </p>
+                  <p className="text-[10px] text-white/20">{Math.round(ref.duration_seconds)}s</p>
+                </div>
+              </div>
+              <audio src={ref.audio_url} controls className="w-full h-8" />
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Filters (submissions tab only) */}
+      {activeTab === 'submissions' && (
+        <div className="flex gap-2 mb-6">
+          {(['pending', 'reviewed', 'all'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                filter === f
+                  ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
+                  : 'text-white/40 hover:text-white/60'
+              }`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Submissions List */}
-      <div className="space-y-4">
-        {submissions.length === 0 && (
-          <div className="glass-panel p-8 text-center">
-            <p className="text-white/30">No submissions found</p>
-          </div>
-        )}
+      {activeTab === 'submissions' && (
+        <div className="space-y-4">
+          {submissions.length === 0 && (
+            <div className="glass-panel p-8 text-center">
+              <p className="text-white/30">No submissions found</p>
+            </div>
+          )}
 
-        {submissions.map((sub, i) => (
-          <motion.div
-            key={sub.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-          >
-            <Link href={`/admin/submissions/${sub.user_id}?submission=${sub.id}`}>
-              <div className="glass-panel-hover p-5 flex items-center gap-4">
-                {/* Avatar */}
-                {sub.user_avatar ? (
-                  <img
-                    src={sub.user_avatar}
-                    alt=""
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-sacred-indigo flex items-center justify-center text-sm text-sacred-gold">
-                    {sub.user_name[0]}
-                  </div>
-                )}
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white/90 font-medium truncate">
-                    {sub.user_name}
-                  </p>
-                  <p className="text-xs text-white/40 truncate">
-                    {sub.module_title} — {sub.sequence_title}
-                  </p>
-                </div>
-
-                {/* Status */}
-                <div className="flex items-center gap-2">
-                  {sub.status === 'pending' ? (
-                    <span className="flex items-center gap-1 text-xs text-amber-400">
-                      <Clock size={12} /> Pending
-                    </span>
+          {submissions.map((sub, i) => (
+            <motion.div
+              key={sub.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+            >
+              <Link href={`/admin/submissions/${sub.user_id}?submission=${sub.id}`}>
+                <div className="glass-panel-hover p-5 flex items-center gap-4">
+                  {/* Avatar */}
+                  {sub.user_avatar ? (
+                    <img
+                      src={sub.user_avatar}
+                      alt=""
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
                   ) : (
-                    <span className="flex items-center gap-1 text-xs text-emerald-400">
-                      <CheckCircle size={12} /> Reviewed
-                    </span>
+                    <div className="w-10 h-10 rounded-full bg-sacred-indigo flex items-center justify-center text-sm text-sacred-gold">
+                      {sub.user_name[0]}
+                    </div>
                   )}
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white/90 font-medium truncate">
+                      {sub.user_name}
+                    </p>
+                    <p className="text-xs text-white/40 truncate">
+                      {sub.module_title} — {sub.sequence_title}
+                    </p>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex items-center gap-2">
+                    {sub.status === 'pending' ? (
+                      <span className="flex items-center gap-1 text-xs text-amber-400">
+                        <Clock size={12} /> Pending
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-xs text-emerald-400">
+                        <CheckCircle size={12} /> Reviewed
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Duration */}
+                  <span className="text-xs text-white/30">
+                    {sub.duration_seconds ? `${Math.round(sub.duration_seconds)}s` : '—'}
+                  </span>
+
+                  {/* Time */}
+                  <span className="text-xs text-white/20">
+                    {new Date(sub.submitted_at).toLocaleDateString()}
+                  </span>
                 </div>
-
-                {/* Duration */}
-                <span className="text-xs text-white/30">
-                  {sub.duration_seconds ? `${Math.round(sub.duration_seconds)}s` : '—'}
-                </span>
-
-                {/* Time */}
-                <span className="text-xs text-white/20">
-                  {new Date(sub.submitted_at).toLocaleDateString()}
-                </span>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
