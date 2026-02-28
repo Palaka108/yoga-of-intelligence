@@ -23,28 +23,25 @@ export default function SplashPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Audio Element */}
+      {/* Audio — intro song on Enter click */}
       <audio ref={audioRef} src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/intro-qualiavibe.mp3" loop preload="auto" />
 
-      {/* Water Animation Background */}
-      <div className="water-bg" aria-hidden="true">
-        {/* Caustic light layer 1 */}
-        <div className="water-caustics water-caustics-1" />
-        {/* Caustic light layer 2 */}
-        <div className="water-caustics water-caustics-2" />
-        {/* Wave ripple layer */}
-        <div className="water-ripple" />
-        {/* Floating light orbs */}
-        <div className="water-orb water-orb-1" />
-        <div className="water-orb water-orb-2" />
-        <div className="water-orb water-orb-3" />
-      </div>
+      {/* Water Video Background — same calm waves as QualiaVibe */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/water-background.mp4" type="video/mp4" />
+      </video>
 
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-rose-900/20 via-pink-900/15 to-slate-900/50" />
+      {/* Gradient Overlay — soft rose/pink tint over water */}
+      <div className="absolute inset-0 bg-gradient-to-b from-rose-900/30 via-pink-900/30 to-slate-900/60" />
 
       {/* Radial Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(168,130,214,0.1)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(168,130,214,0.12)_0%,transparent_70%)]" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">

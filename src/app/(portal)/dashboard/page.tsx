@@ -98,13 +98,12 @@ export default function DashboardPage() {
       >
         {/* Video in Glassmorphism Card */}
         <div className="relative rounded-3xl overflow-hidden border border-white/15 bg-white/5 backdrop-blur-xl shadow-2xl mb-8">
-          <div className="aspect-video max-h-[420px]">
+          <div className="aspect-video max-h-[420px] bg-sacred-black flex items-center justify-center">
             <video
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               controls
               playsInline
               preload="metadata"
-              poster=""
             >
               <source
                 src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/meditation-intro.mp4"
