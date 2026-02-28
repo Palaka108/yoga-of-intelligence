@@ -24,7 +24,7 @@ export default function SplashPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Audio Element */}
-      <audio ref={audioRef} src="/audio/intro-qualiavibe.mp3" loop preload="auto" />
+      <audio ref={audioRef} src="https://qwlbbcrjdpuxkavwyjyg.supabase.co/storage/v1/object/public/yoi-content/intro/intro-qualiavibe.mp3" loop preload="auto" />
 
       {/* Video Background */}
       <video
