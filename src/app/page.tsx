@@ -1,9 +1,21 @@
 'use client';
 
+import { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SplashPage() {
+  const [entered, setEntered] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const router = useRouter();
+
+  const handleEnter = useCallback(() => {
+    // Start playing the intro song
+    if (audioRef.current) {
+      audioRef.current.volume = 0.4;
+      audioRef.current.play().catch(() => {});
+    }
+    setEntered(true);
+  }, []);
 
   const handleSignIn = () => {
     router.push('/login');
@@ -11,6 +23,9 @@ export default function SplashPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
+      {/* Audio Element */}
+      <audio ref={audioRef} src="/audio/intro-qualiavibe.mp3" loop preload="auto" />
+
       {/* Video Background */}
       <video
         autoPlay
@@ -45,15 +60,31 @@ export default function SplashPage() {
           {/* Decorative line */}
           <div className="w-24 h-px bg-gradient-to-r from-transparent via-sacred-gold/50 to-transparent mx-auto mb-10" />
 
-          {/* Auth Buttons */}
-          <div className="flex flex-col gap-4 w-full max-w-xs mx-auto">
-            <button onClick={handleSignIn} className="btn-sacred text-base">
-              Sign In
+          {!entered ? (
+            /* Enter Button — triggers audio */
+            <button
+              onClick={handleEnter}
+              className="group relative px-12 py-4 rounded-full border border-sacred-gold/30
+                         bg-sacred-gold/5 backdrop-blur-md
+                         transition-all duration-500
+                         hover:border-sacred-gold/60 hover:bg-sacred-gold/10
+                         hover:shadow-[0_0_40px_rgba(201,168,76,0.2)]"
+            >
+              <span className="font-display text-lg tracking-[0.2em] uppercase text-sacred-gold group-hover:text-sacred-gold-light transition-colors">
+                Enter
+              </span>
             </button>
-            <button onClick={handleSignIn} className="btn-glass text-base">
-              Create Account
-            </button>
-          </div>
+          ) : (
+            /* Auth Buttons — shown after entering */
+            <div className="flex flex-col gap-4 w-full max-w-xs mx-auto animate-fade-in">
+              <button onClick={handleSignIn} className="btn-sacred text-base">
+                Sign In
+              </button>
+              <button onClick={handleSignIn} className="btn-glass text-base">
+                Create Account
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
