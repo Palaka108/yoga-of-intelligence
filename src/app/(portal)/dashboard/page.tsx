@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Play, Lock, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { Play, Lock, CheckCircle, Clock, ChevronRight, Dna } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '@/lib/supabase-client';
 import GoalsWidget from '@/components/dashboard/GoalsWidget';
@@ -285,6 +285,31 @@ export default function DashboardPage() {
               </motion.div>
             ))}
           </div>
+
+          {/* ---- Sankhya-Biology Framework ---- */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.5 }}
+            className="w-full"
+          >
+            <Link href="/framework/sankhya-biology" className="block">
+              <div className="glass-portal-inner p-4 sm:p-5 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-sacred-gold/5 border border-sacred-gold/10 flex items-center justify-center shrink-0">
+                  <Dna size={18} className="text-sacred-gold/50" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display text-sm sm:text-base text-white/80 leading-snug">
+                    Sankhya-Biology Framework
+                  </h3>
+                  <p className="text-[10px] sm:text-xs text-white/25 mt-0.5 font-body">
+                    10-part analysis connecting diverse intelligence research to Sankhya philosophy
+                  </p>
+                </div>
+                <ChevronRight size={14} className="text-white/15 shrink-0" />
+              </div>
+            </Link>
+          </motion.div>
 
           {/* ---- Goals Widget ---- */}
           {user && (
