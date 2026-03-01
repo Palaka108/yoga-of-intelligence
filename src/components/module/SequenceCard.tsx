@@ -82,6 +82,17 @@ export default function SequenceCard({
   moduleId,
 }: SequenceCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const { setContext } = useRecorderStore();
+
+  // Set recorder context when sequence is expanded so voice recordings get tagged
+  useEffect(() => {
+    if (expanded && status !== 'locked') {
+      setContext(moduleId, sequence.id);
+    }
+    return () => {
+      if (expanded) setContext(null, null);
+    };
+  }, [expanded, moduleId, sequence.id, status, setContext]);
 
   const handleClick = () => {
     if (status === 'locked') return;
@@ -250,7 +261,7 @@ export default function SequenceCard({
 
                 {/* Reflection Prompt — contemplative card with mic nudge */}
                 {sequence.sequence_type === 'reflection_prompt' && status === 'unlocked' && (
-                  <ReflectionNudge />
+                  <ReflectionNudge moduleId={moduleId} sequenceId={sequence.id} />
                 )}
 
                 {/* Goal Setting Form */}
@@ -311,14 +322,15 @@ export default function SequenceCard({
   );
 }
 
-/** Small sub-component that pulses the global voice recorder mic */
-function ReflectionNudge() {
-  const { triggerPulse } = useRecorderStore();
+/** Small sub-component that pulses the global voice recorder mic and sets context */
+function ReflectionNudge({ moduleId, sequenceId }: { moduleId: string; sequenceId: string }) {
+  const { triggerPulse, setContext } = useRecorderStore();
 
   useEffect(() => {
+    setContext(moduleId, sequenceId);
     const timer = setTimeout(() => triggerPulse(), 1500);
     return () => clearTimeout(timer);
-  }, [triggerPulse]);
+  }, [triggerPulse, setContext, moduleId, sequenceId]);
 
   return (
     <div className="flex items-center gap-3 text-white/40 text-xs mb-2 animate-fade-in">
