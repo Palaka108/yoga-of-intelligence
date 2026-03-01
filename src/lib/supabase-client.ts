@@ -7,3 +7,6 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }
+
+/** Alias used by VoiceRecorder and GoalSettingForm */
+export { createClient as createBrowserClient };

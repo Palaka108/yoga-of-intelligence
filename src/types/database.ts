@@ -245,6 +245,7 @@ export interface Database {
           target_date?: string;
           status?: 'active' | 'completed' | 'abandoned';
           progress_notes?: string | null;
+          updated_at?: string;
         };
       };
       shabda_articles: {

@@ -37,9 +37,9 @@ export default function GoalsWidget({ userId }: { userId: string }) {
   const toggleComplete = async (goalId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'completed' : 'active';
     const supabase = createClient();
-    await supabase
-      .from('yoi_user_goals')
-      .update({ status: newStatus, updated_at: new Date().toISOString() } as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('yoi_user_goals') as any)
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq('id', goalId);
 
     setGoals((prev) =>
