@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Users, Video, Clock, CheckCircle, AlertCircle, Mic } from 'lucide-react';
+import { Users, Video, Clock, CheckCircle, AlertCircle, Mic, ShieldCheck, ShieldX, UserCheck } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { useUser } from '@/hooks/use-user';
 
@@ -21,6 +21,15 @@ interface SubmissionRow {
   user_avatar: string | null;
   module_title: string;
   sequence_title: string;
+}
+
+interface PendingUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  approved: boolean;
+  created_at: string;
 }
 
 interface VoiceReflection {
@@ -42,10 +51,14 @@ export default function AdminDashboard() {
     totalUsers: 0,
     pendingSubmissions: 0,
     reviewedSubmissions: 0,
+    pendingApprovals: 0,
   });
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
+  const [approvalFilter, setApprovalFilter] = useState<'pending' | 'approved' | 'all'>('pending');
+  const [approvingId, setApprovingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'pending' | 'reviewed' | 'all'>('pending');
-  const [activeTab, setActiveTab] = useState<'submissions' | 'reflections'>('submissions');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'reflections' | 'approvals'>('submissions');
 
   useEffect(() => {
     if (!profile || (profile.role !== 'admin' && profile.role !== 'instructor')) return;
@@ -69,10 +82,17 @@ export default function AdminDashboard() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'reviewed');
 
+      const { count: pendingApprovalCount } = await supabase
+        .from('yoi_users')
+        .select('*', { count: 'exact', head: true })
+        .eq('role', 'student')
+        .eq('approved', false);
+
       setStats({
         totalUsers: userCount ?? 0,
         pendingSubmissions: pendingCount ?? 0,
         reviewedSubmissions: reviewedCount ?? 0,
+        pendingApprovals: pendingApprovalCount ?? 0,
       });
 
       // Get submissions with user info
@@ -197,11 +217,27 @@ export default function AdminDashboard() {
         setReflections(enrichedRefs);
       }
 
+      // Fetch users for approval tab
+      const approvedParam = approvalFilter === 'pending' ? 'false' : approvalFilter === 'approved' ? 'true' : undefined;
+      const usersUrl = new URL('/api/admin/users', window.location.origin);
+      usersUrl.searchParams.set('admin_id', profile!.id);
+      if (approvedParam) usersUrl.searchParams.set('approved', approvedParam);
+
+      try {
+        const res = await fetch(usersUrl.toString());
+        const data = await res.json();
+        if (data.users) {
+          setPendingUsers(data.users);
+        }
+      } catch {
+        // silently fail — users tab just won't load
+      }
+
       setLoading(false);
     }
 
     fetchData();
-  }, [profile, filter]);
+  }, [profile, filter, approvalFilter]);
 
   if (userLoading || loading) {
     return (
@@ -224,9 +260,10 @@ export default function AdminDashboard() {
       <h1 className="font-display text-3xl gold-text mb-8">Instructor Dashboard</h1>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {[
           { label: 'Students', value: stats.totalUsers, icon: Users, color: 'text-sacred-neon' },
+          { label: 'Awaiting Access', value: stats.pendingApprovals, icon: UserCheck, color: 'text-rose-400' },
           { label: 'Pending Review', value: stats.pendingSubmissions, icon: Clock, color: 'text-amber-400' },
           { label: 'Reviewed', value: stats.reviewedSubmissions, icon: CheckCircle, color: 'text-emerald-400' },
         ].map((stat) => (
@@ -264,6 +301,21 @@ export default function AdminDashboard() {
           {reflections.length > 0 && (
             <span className="bg-sacred-gold/20 text-sacred-gold text-[10px] px-1.5 py-0.5 rounded-full">
               {reflections.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('approvals')}
+          className={`flex items-center gap-2 px-3 py-1.5 text-sm transition-colors ${
+            activeTab === 'approvals'
+              ? 'text-sacred-gold border-b-2 border-sacred-gold -mb-[13px] pb-[11px]'
+              : 'text-white/40 hover:text-white/60'
+          }`}
+        >
+          <UserCheck size={14} /> User Approvals
+          {stats.pendingApprovals > 0 && (
+            <span className="bg-rose-500/20 text-rose-400 text-[10px] px-1.5 py-0.5 rounded-full">
+              {stats.pendingApprovals}
             </span>
           )}
         </button>
@@ -312,6 +364,137 @@ export default function AdminDashboard() {
             </motion.div>
           ))}
         </div>
+      )}
+
+      {/* User Approvals Tab */}
+      {activeTab === 'approvals' && (
+        <>
+          <div className="flex gap-2 mb-6">
+            {(['pending', 'approved', 'all'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setApprovalFilter(f)}
+                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                  approvalFilter === f
+                    ? 'bg-sacred-gold/20 text-sacred-gold border border-sacred-gold/30'
+                    : 'text-white/40 hover:text-white/60'
+                }`}
+              >
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-3">
+            {pendingUsers.length === 0 && (
+              <div className="glass-panel p-8 text-center">
+                <UserCheck size={32} className="mx-auto text-white/10 mb-3" />
+                <p className="text-white/30">
+                  {approvalFilter === 'pending' ? 'No users awaiting approval' : 'No users found'}
+                </p>
+              </div>
+            )}
+
+            {pendingUsers.map((user, i) => (
+              <motion.div
+                key={user.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="glass-panel p-4 flex items-center gap-4"
+              >
+                {/* Avatar */}
+                {user.avatar_url ? (
+                  <img
+                    src={user.avatar_url}
+                    alt=""
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-sacred-indigo flex items-center justify-center text-sm text-sacred-gold">
+                    {(user.full_name || user.email)[0].toUpperCase()}
+                  </div>
+                )}
+
+                {/* User Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white/90 font-medium truncate">
+                    {user.full_name || 'No name'}
+                  </p>
+                  <p className="text-xs text-white/40 truncate">{user.email}</p>
+                </div>
+
+                {/* Sign-up date */}
+                <span className="text-xs text-white/20">
+                  {new Date(user.created_at).toLocaleDateString()}
+                </span>
+
+                {/* Status & Action */}
+                {user.approved ? (
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1 text-xs text-emerald-400">
+                      <ShieldCheck size={14} /> Approved
+                    </span>
+                    <button
+                      onClick={async () => {
+                        setApprovingId(user.id);
+                        await fetch('/api/admin/users', {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            user_id: user.id,
+                            approved: false,
+                            admin_id: profile!.id,
+                          }),
+                        });
+                        setPendingUsers((prev) =>
+                          prev.map((u) => (u.id === user.id ? { ...u, approved: false } : u))
+                        );
+                        setStats((prev) => ({ ...prev, pendingApprovals: prev.pendingApprovals + 1 }));
+                        setApprovingId(null);
+                      }}
+                      disabled={approvingId === user.id}
+                      className="px-3 py-1.5 rounded-lg text-xs border border-red-500/30 text-red-400
+                                 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    >
+                      Revoke
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      setApprovingId(user.id);
+                      await fetch('/api/admin/users', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          user_id: user.id,
+                          approved: true,
+                          admin_id: profile!.id,
+                        }),
+                      });
+                      setPendingUsers((prev) =>
+                        prev.map((u) => (u.id === user.id ? { ...u, approved: true } : u))
+                      );
+                      setStats((prev) => ({
+                        ...prev,
+                        pendingApprovals: Math.max(0, prev.pendingApprovals - 1),
+                      }));
+                      setApprovingId(null);
+                    }}
+                    disabled={approvingId === user.id}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs
+                               bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold
+                               hover:bg-sacred-gold/20 transition-colors disabled:opacity-50"
+                  >
+                    <ShieldCheck size={14} />
+                    {approvingId === user.id ? 'Approving...' : 'Approve'}
+                  </button>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Filters (submissions tab only) */}
