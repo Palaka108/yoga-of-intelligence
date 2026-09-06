@@ -1,0 +1,125 @@
+/* ============================================================
+   REDEMPTION — campaign-scoped styles.
+   Loaded only by the (campaign) route group. Every rule is
+   namespaced under .rdm-root so nothing here can reach the
+   portal, and globals.css is left untouched.
+   ============================================================ */
+
+.rdm-root ::selection {
+  background: #e2431f;
+  color: #f4efe6;
+}
+
+/* --- scroll reveal (driven by IntersectionObserver) --- */
+.rdm-root .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.rdm-root .reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- the signal line breathes --- */
+.rdm-root .wave-trace {
+  animation: rdmWave 7s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes rdmWave {
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scaleY(1.7);
+    opacity: 1;
+  }
+}
+
+/* --- hero type: let the last letterform run past the edge --- */
+.rdm-root .rdm-display {
+  font-stretch: 100%;
+  letter-spacing: -0.045em;
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+/* --- hairline rule used between editorial blocks --- */
+.rdm-root .rdm-rule {
+  border: 0;
+  border-top: 1px solid currentColor;
+  opacity: 0.28;
+}
+
+/* --- focus ring that stays visible on both grounds --- */
+.rdm-root :focus-visible {
+  outline: 2px solid #e2431f;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   Reduced motion — atmosphere off, content intact.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .rdm-root .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .rdm-root .wave-trace {
+    animation: none;
+  }
+
+  .rdm-root *,
+  .rdm-root *::before,
+  .rdm-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ============================================================
+   Short viewports (small Androids, landscape phones).
+   Keeps the whole promise — question, date, Brooklyn, FREE and
+   the CTA — on the first screen instead of pushing it under.
+   ============================================================ */
+@media (max-height: 720px) {
+  .rdm-root .rdm-hero-title {
+    font-size: clamp(2.2rem, 11.5vw, 13.5rem);
+  }
+
+  .rdm-root .rdm-hero-title-sm {
+    font-size: clamp(1.5rem, 6.5vw, 4.5rem);
+  }
+
+  .rdm-root .rdm-hero-sub {
+    margin-top: 0.75rem;
+  }
+
+  .rdm-root .rdm-hero-sub p {
+    font-size: clamp(1rem, 3.6vw, 2.9rem);
+  }
+
+  .rdm-root .rdm-hero-sub svg {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   Sticky RSVP bar. Kept in CSS rather than as Tailwind arbitrary
+   values because env() inside an arbitrary value defeats the
+   class extractor.
+   ------------------------------------------------------------ */
+.rdm-root .rdm-sticky {
+  background: rgba(14, 14, 14, 0.94);
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
