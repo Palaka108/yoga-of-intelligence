@@ -30,7 +30,7 @@ export default function ThanksPage() {
       <Grain />
 
       <div className="pointer-events-none absolute inset-x-0 top-1/3 z-0 opacity-[0.045]">
-        <Marquee words={['REDEMPTION', 'SEE YOU THERE', 'BROOKLYN']} />
+        <Marquee words={['EMANCIPATION', 'SEE YOU THERE', 'BROOKLYN']} />
       </div>
 
       <div className="relative z-20 mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center py-10">

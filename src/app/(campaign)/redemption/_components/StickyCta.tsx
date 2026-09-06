@@ -61,10 +61,10 @@ export default function StickyCta() {
       <div className="mx-auto flex max-w-5xl items-center gap-4">
         <div className="hidden flex-1 sm:block">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-redemption-ivory/55">
-            Tue 09.22 · 7–9 PM · Brooklyn
+            Tue Sept 22 · 7–9 PM · Brooklyn
           </p>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-redemption-vermilion">
-            Donations welcome
+            Donations welcomed
           </p>
         </div>
         <a

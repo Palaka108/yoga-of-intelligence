@@ -24,20 +24,18 @@ function Meta({ children, className = '' }: { children: React.ReactNode; classNa
   );
 }
 
-/* The four participatory parts of the evening. Kirtan is glossed on first
-   appearance and left alone after that. */
+/* The three parts of the evening. Kirtan is glossed on first appearance and
+   left alone after that — it is the music, not a separate item from it. */
 const EXPERIENCE = [
-  { label: 'KIRTAN MUSIC', note: 'Call-and-response mantra music' },
+  { label: 'LIVE KIRTAN', note: 'Call-and-response mantra music' },
   { label: 'INTERACTIVE PHILOSOPHY', note: 'Ideas explored together, not a lecture' },
-  { label: 'MANTRA', note: 'A chance to experience redirected attention, not only discuss it' },
   { label: 'VEGETARIAN FEAST', note: 'Food, conversation and community afterward' },
 ];
 
 /* Shape of the night, not a run-of-show. Only the 7-9 bounds are real times. */
 const TIMELINE = [
-  { time: '7 PM', label: 'ARRIVE + KIRTAN MUSIC' },
+  { time: '7 PM', label: 'ARRIVE + LIVE KIRTAN' },
   { time: '', label: 'CONVERSATION + PHILOSOPHY' },
-  { time: '', label: 'MANTRA EXPERIENCE' },
   { time: '', label: 'VEGETARIAN FEAST + COMMUNITY' },
   { time: '9 PM', label: 'CLOSE' },
 ];
@@ -82,7 +80,7 @@ export default function RedemptionPage() {
         <div className="pointer-events-none absolute inset-0 z-0 flex flex-col justify-center gap-2 opacity-[0.035]">
           <Marquee words={['DESIRE', 'MIND', 'IDENTITY']} />
           <Marquee words={['SIGNAL', 'FREEDOM', 'CONSCIOUSNESS']} reverse />
-          <Marquee words={['WHO IS WATCHING?', 'NOISE', 'REDEMPTION']} />
+          <Marquee words={['EMANCIPATION', 'NOISE', 'ATTENTION']} />
         </div>
 
         {/* --- top rail --- */}
@@ -98,17 +96,20 @@ export default function RedemptionPage() {
         </header>
 
         {/* --- the poster --- */}
-        <div className="relative z-20 py-4 sm:py-10">
-          <h1 className="rdm-display rdm-hero-title font-grotesk text-[clamp(3.35rem,17vw,13.5rem)] font-black text-redemption-ivory">
-            <span className="block">Who</span>
-            <span className="block">Owns</span>
-            <span className="block">Your</span>
-            <span className="-mr-[8vw] block text-redemption-vermilion">Mind?</span>
+        <div className="relative z-20 py-4 sm:py-8">
+          {/* One long word: sized to sit inside the gutters at every width
+              rather than being clipped by the viewport edge. */}
+          <h1 className="rdm-display rdm-hero-title font-grotesk text-[clamp(2.1rem,11vw,9.5rem)] font-black leading-[0.9] tracking-[-0.05em] text-redemption-ivory">
+            {EVENT.title}
           </h1>
 
-          <div className="rdm-hero-sub mt-5 max-w-2xl sm:mt-8">
+          <p className="rdm-hero-song mt-3 font-grotesk text-[clamp(1.05rem,4.4vw,2.6rem)] font-bold uppercase leading-tight tracking-[-0.02em] text-redemption-vermilion sm:mt-4">
+            {EVENT.songSubtitle}
+          </p>
+
+          <div className="rdm-hero-sub mt-5 max-w-2xl sm:mt-7">
             <Waveform className="h-6 text-redemption-ivory/25 sm:h-8" />
-            <p className="mt-4 font-editorial text-[clamp(1.3rem,4.3vw,2.9rem)] italic leading-[1.15] text-redemption-ivory/85 sm:mt-6">
+            <p className="mt-4 font-editorial text-[clamp(1.2rem,4vw,2.6rem)] italic leading-[1.15] text-redemption-ivory/85 sm:mt-5">
               {EVENT.subtitle}
             </p>
           </div>
@@ -116,26 +117,15 @@ export default function RedemptionPage() {
 
         {/* --- metadata + CTA --- */}
         <div className="relative z-20">
-          <p className="rdm-hero-title-sm font-grotesk text-[clamp(2rem,9vw,4.5rem)] font-black uppercase leading-none tracking-[-0.03em] text-redemption-ivory">
-            {EVENT.title}
+          {/* Set as two poster lines rather than a three-column grid: the full
+              date never fits a third of a phone screen without wrapping. */}
+          <p className="border-t border-redemption-ivory/15 pt-4 font-grotesk text-[clamp(1.05rem,4.8vw,2rem)] font-bold uppercase leading-[1.25] tracking-[-0.01em] text-redemption-ivory sm:pt-6">
+            Tuesday · September 22
+            <br />
+            <span className="text-redemption-ivory/65">
+              {EVENT.timeShort} · {EVENT.venue.city}
+            </span>
           </p>
-
-          <dl className="mt-5 grid grid-cols-3 gap-x-5 border-t border-redemption-ivory/15 pt-4 sm:mt-7 sm:pt-6">
-            {[
-              ['Date', EVENT.dateShort],
-              ['Time', EVENT.timeShort],
-              ['Where', 'Brooklyn'],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <dt>
-                  <Meta className="text-redemption-ivory/40">{label}</Meta>
-                </dt>
-                <dd className="mt-1 font-grotesk text-lg font-bold uppercase tracking-tight text-redemption-ivory sm:text-xl">
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
 
           <a
             href="#rsvp"
@@ -147,7 +137,7 @@ export default function RedemptionPage() {
           </a>
 
           <Meta className="mt-4 block text-center text-redemption-ivory/55 sm:mt-6 sm:text-left">
-            {EVENT.includes.join(' • ')}
+            {EVENT.includes.join(' · ')}
           </Meta>
         </div>
       </section>
@@ -155,13 +145,43 @@ export default function RedemptionPage() {
       <div id="hero-sentinel" aria-hidden />
 
       {/* ==========================================================
-          01 — THE QUESTION  (question and tension, one movement)
+          01 — THE DOORWAY  (why "Redemption Song")
           ========================================================== */}
       <section className="relative overflow-hidden bg-redemption-ink px-5 py-24 sm:px-8 sm:py-32 lg:px-14">
         <Grain opacity={0.1} />
         <div className="relative z-20 mx-auto max-w-5xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">01 — The question</Meta>
+            <Meta className="text-redemption-vermilion">01 — The doorway</Meta>
+          </Reveal>
+
+          <div className="mt-12 sm:mt-16">
+            <Reveal>
+              <p className="font-grotesk text-[clamp(1.7rem,7vw,4.2rem)] font-black uppercase leading-[1.02] tracking-[-0.04em] text-redemption-ivory">
+                A song about freedom.
+              </p>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className="mt-2 font-grotesk text-[clamp(1.7rem,7vw,4.2rem)] font-black uppercase leading-[1.02] tracking-[-0.04em] text-redemption-ivory/45">
+                An ancient philosophy of consciousness.
+              </p>
+            </Reveal>
+            <Reveal delay={240}>
+              <p className="mt-8 font-editorial text-[clamp(1.9rem,8vw,5rem)] italic leading-[1.02] text-redemption-vermilion">
+                One question: what does it actually mean to become free?
+              </p>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ==========================================================
+          02 — THE QUESTION  (question and tension, one movement)
+          ========================================================== */}
+      <section className="relative overflow-hidden bg-redemption-ink px-5 py-24 sm:px-8 sm:py-32 lg:px-14">
+        <Grain opacity={0.1} />
+        <div className="relative z-20 mx-auto max-w-5xl">
+          <Reveal>
+            <Meta className="text-redemption-vermilion">02 — The question</Meta>
           </Reveal>
 
           <div className="mt-12 space-y-1 sm:mt-16">
@@ -201,7 +221,7 @@ export default function RedemptionPage() {
       <section className="bg-redemption-vermilion px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-ink/60">02 — The turn</Meta>
+            <Meta className="text-redemption-ink/60">03 — The turn</Meta>
           </Reveal>
 
           <Reveal>
@@ -218,8 +238,8 @@ export default function RedemptionPage() {
 
           <Reveal delay={200}>
             <p className="mt-10 max-w-3xl font-editorial text-[clamp(1.5rem,5vw,2.6rem)] italic leading-[1.15]">
-              Freedom isn’t about having no thoughts or desires. It’s about changing what
-              consciousness is directed toward.
+              Freedom isn’t about eliminating thought or desire. It’s about changing where
+              consciousness is directed.
             </p>
           </Reveal>
         </div>
@@ -232,7 +252,7 @@ export default function RedemptionPage() {
         <Grain opacity={0.1} />
         <div className="relative z-20 mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">03 — The experience</Meta>
+            <Meta className="text-redemption-vermilion">04 — The experience</Meta>
           </Reveal>
 
           <Reveal>
@@ -313,7 +333,7 @@ export default function RedemptionPage() {
       <section className="relative overflow-hidden bg-redemption-paper px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">04 — The ancient idea</Meta>
+            <Meta className="text-redemption-vermilion">05 — The ancient idea</Meta>
           </Reveal>
 
           <div className="mt-14 grid gap-12 lg:grid-cols-12">
@@ -325,8 +345,9 @@ export default function RedemptionPage() {
               </Reveal>
               <Reveal delay={150}>
                 <p className="mt-8 font-editorial text-[clamp(1.5rem,5vw,2.6rem)] italic leading-[1.2] text-redemption-vermilion">
-                  an ancient conversation asked a surprisingly modern question: what actually
-                  binds the mind — and what makes consciousness free?
+                  an ancient conversation explored a surprisingly modern problem: why do our own
+                  desires, habits and senses sometimes seem to run us — and what does freedom
+                  from that conditioning actually look like?
                 </p>
               </Reveal>
             </div>
@@ -335,13 +356,12 @@ export default function RedemptionPage() {
               <Reveal delay={220}>
                 <hr className="rdm-rule mb-6" />
                 <p className="text-base leading-relaxed text-redemption-ink/75">
-                  The evening draws on a dialogue between a teacher, Kapila, and his mother,
-                  Devahūti — and on the ancient analytical system it belongs to, Sāṅkhya: a map
-                  of how attention, desire and identity actually operate.
+                  The evening draws on the dialogue between Kapila and his mother, Devahūti, and
+                  on the ancient analytical philosophy of Sāṅkhya.
                 </p>
                 <p className="mt-5 text-base leading-relaxed text-redemption-ink/75">
                   She asks him how a person gets free. What comes back isn’t a belief system.
-                  It’s an analysis, and it holds up unreasonably well against a Tuesday in 2026.
+                  It’s an analysis — and it holds up unreasonably well against a Tuesday in 2026.
                 </p>
               </Reveal>
             </div>
@@ -381,7 +401,7 @@ export default function RedemptionPage() {
       <section className="bg-redemption-paper-deep px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">05 — Come curious</Meta>
+            <Meta className="text-redemption-vermilion">06 — Come curious</Meta>
           </Reveal>
 
           <Reveal>
@@ -449,7 +469,7 @@ export default function RedemptionPage() {
                     plan on having.
                   </p>
                   <Meta className="mt-7 block text-redemption-ink/45">
-                    Donations welcome · Bring a friend
+                    Donations welcomed · Bring a friend
                   </Meta>
                 </Reveal>
               </div>
@@ -467,15 +487,15 @@ export default function RedemptionPage() {
       >
         <Grain opacity={0.14} />
         <div className="pointer-events-none absolute inset-x-0 bottom-10 z-0 opacity-[0.05]">
-          <Marquee words={['REDEMPTION', 'BROOKLYN', 'SEPT 22']} />
+          <Marquee words={['EMANCIPATION', 'BROOKLYN', 'SEPT 22']} />
         </div>
 
         <div className="relative z-20 mx-auto max-w-6xl">
           <Reveal>
-            <h2 className="rdm-display font-grotesk text-[clamp(2.6rem,13vw,9rem)] font-black text-redemption-ivory">
-              Who owns
+            <h2 className="rdm-display font-grotesk text-[clamp(2.4rem,11vw,8rem)] font-black text-redemption-ivory">
+              What does it mean
               <br />
-              <span className="text-redemption-vermilion">your mind?</span>
+              <span className="text-redemption-vermilion">to be free?</span>
             </h2>
           </Reveal>
 
@@ -554,6 +574,9 @@ export default function RedemptionPage() {
             A special {EVENT.brand} presentation taking place during a Tuesday Bhakti Night
             programme in Brooklyn. Contact details collected on this page are used to confirm
             your spot and send reminders for this event only.
+          </p>
+          <p className="mt-4 max-w-2xl text-xs leading-relaxed text-redemption-ivory/25">
+            {EVENT.disclaimer}
           </p>
         </div>
       </footer>

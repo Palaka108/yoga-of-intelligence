@@ -94,7 +94,8 @@
    ============================================================ */
 @media (max-height: 720px) {
   .rdm-root .rdm-hero-title {
-    font-size: clamp(2.2rem, 11.5vw, 13.5rem);
+    /* EMANCIPATION is one long word — keep it inside the gutters. */
+    font-size: clamp(1.8rem, 9.6vw, 13.5rem);
   }
 
   .rdm-root .rdm-hero-title-sm {
@@ -157,4 +158,15 @@
   border: 0;
   opacity: 0;
   pointer-events: none;
+}
+
+/* ------------------------------------------------------------
+   EMANCIPATION is a single long word: on short viewports it needs
+   to shrink alongside the rest of the hero so the CTA still clears
+   the fold.
+   ------------------------------------------------------------ */
+@media (max-height: 720px) {
+  .rdm-root .rdm-hero-song {
+    font-size: clamp(0.9rem, 3.4vw, 2.6rem);
+  }
 }
