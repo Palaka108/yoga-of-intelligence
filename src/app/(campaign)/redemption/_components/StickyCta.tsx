@@ -64,7 +64,7 @@ export default function StickyCta() {
             Tue Sept 22 · 7–9 PM · Brooklyn
           </p>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-redemption-vermilion">
-            Donations welcomed
+            Donations welcome
           </p>
         </div>
         <a

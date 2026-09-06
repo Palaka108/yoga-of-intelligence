@@ -3,7 +3,7 @@ import { EVENT } from '@/lib/redemption-event';
 
 export const runtime = 'edge';
 export const alt =
-  'EMANCIPATION — The Yoga of “Redemption Song”. An evening of live kirtan, philosophy and consciousness in Brooklyn, Tuesday September 22. Donations welcomed.';
+  'EMANCIPATION — The Yoga of “Redemption Song”. An evening of live kirtan, philosophy and consciousness in Brooklyn, Tuesday September 22. Donations welcome.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -51,7 +51,7 @@ export default function OpengraphImage() {
               padding: '8px 16px',
             }}
           >
-            Donations welcomed
+            Donations welcome
           </div>
         </div>
 
