@@ -316,7 +316,21 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
         {/* Honeypot. Bots fill it, people never see it: removed from the
             accessibility tree, out of the tab order, and taken out of layout
             entirely rather than merely pushed off-screen. */}
-        <div className="rdm-honeypot" aria-hidden="true">
+        <div
+          className="rdm-honeypot"
+          aria-hidden="true"
+          // Inline as well as in the stylesheet: if the CSS ever fails to
+          // load, the field must still not be visible to a real visitor.
+          style={{
+            position: 'absolute',
+            width: 1,
+            height: 1,
+            overflow: 'hidden',
+            clipPath: 'inset(50%)',
+            opacity: 0,
+            pointerEvents: 'none',
+          }}
+        >
           <label htmlFor="company" tabIndex={-1}>
             Company
           </label>

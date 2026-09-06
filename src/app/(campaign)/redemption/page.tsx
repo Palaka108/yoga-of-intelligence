@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 function Meta({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <span
-      className={`font-mono text-[11px] uppercase leading-relaxed tracking-[0.22em] ${className}`}
+      className={`font-mono text-[12px] uppercase leading-relaxed tracking-[0.18em] ${className}`}
     >
       {children}
     </span>
@@ -54,15 +54,13 @@ export default function RedemptionPage() {
         </div>
 
         {/* --- top rail --- */}
-        <header className="relative z-20 flex items-start justify-between gap-4">
-          {/* Tighter tracking than the standard Meta so the brand line holds
-              two lines on a phone instead of three. */}
-          <span className="block font-mono text-[11px] uppercase leading-relaxed tracking-[0.12em] text-redemption-ivory/60 sm:tracking-[0.22em]">
+        {/* Donations moved down beside the event details: as a boxed badge up
+            here it crowded the top of the phone screen and forced the brand
+            line onto three lines. */}
+        <header className="relative z-20">
+          <span className="block font-mono text-[12px] uppercase leading-relaxed tracking-[0.16em] text-redemption-ivory/65">
             {EVENT.brand} presents
           </span>
-          <Meta className="shrink-0 border border-redemption-vermilion px-3 py-2 text-center text-redemption-vermilion">
-            {EVENT.admission}
-          </Meta>
         </header>
 
         {/* --- the poster --- */}
@@ -73,13 +71,13 @@ export default function RedemptionPage() {
             {EVENT.title}
           </h1>
 
-          <p className="rdm-hero-song mt-3 font-grotesk text-[clamp(1.05rem,4.4vw,2.6rem)] font-bold uppercase leading-tight tracking-[-0.02em] text-redemption-vermilion sm:mt-4">
+          <p className="rdm-hero-song mt-3 font-grotesk text-[clamp(1.25rem,5.1vw,2.6rem)] font-bold uppercase leading-tight tracking-[-0.02em] text-redemption-vermilion sm:mt-4">
             {EVENT.songSubtitle}
           </p>
 
           <div className="rdm-hero-sub mt-5 max-w-2xl sm:mt-7">
             <Waveform className="h-6 text-redemption-ivory/25 sm:h-8" />
-            <p className="mt-4 font-editorial text-[clamp(1.2rem,4vw,2.6rem)] italic leading-[1.15] text-redemption-ivory/85 sm:mt-5">
+            <p className="mt-4 font-editorial text-[clamp(1.35rem,4.6vw,2.6rem)] italic leading-[1.2] text-redemption-ivory/90 sm:mt-5">
               {EVENT.subtitle}
             </p>
           </div>
@@ -89,13 +87,16 @@ export default function RedemptionPage() {
         <div className="relative z-20">
           {/* Set as two poster lines rather than a three-column grid: the full
               date never fits a third of a phone screen without wrapping. */}
-          <p className="border-t border-redemption-ivory/15 pt-4 font-grotesk text-[clamp(1.05rem,4.8vw,2rem)] font-bold uppercase leading-[1.25] tracking-[-0.01em] text-redemption-ivory sm:pt-6">
-            Tuesday · September 22
-            <br />
-            <span className="text-redemption-ivory/65">
-              {EVENT.timeShort} · {EVENT.venue.city}
-            </span>
-          </p>
+          <div className="border-t border-redemption-ivory/15 pt-4 sm:pt-6">
+            <p className="font-grotesk text-[clamp(1.05rem,4.8vw,2rem)] font-bold uppercase leading-[1.25] tracking-[-0.01em] text-redemption-ivory">
+              Tuesday · September 22
+              <br />
+              <span className="text-redemption-ivory/70">
+                {EVENT.timeShort} · {EVENT.venue.city}
+              </span>
+            </p>
+            <Meta className="mt-2 block text-redemption-vermilion">{EVENT.admission}</Meta>
+          </div>
 
           <a
             href="#rsvp"
@@ -106,9 +107,10 @@ export default function RedemptionPage() {
             Reserve your spot
           </a>
 
-          {/* Deliberately larger than the standard Meta: this line is what a
-              visitor from an ad actually scans for. */}
-          <p className="mt-4 text-center font-mono text-[13px] uppercase leading-relaxed tracking-[0.13em] text-redemption-ivory/75 sm:mt-5 sm:text-left sm:text-sm sm:tracking-[0.18em]">
+          {/* The line ad traffic actually scans: set larger and looser than
+              the metadata voice, and allowed to wrap onto two lines rather
+              than being squeezed onto one. */}
+          <p className="mt-4 text-balance text-center font-mono text-[15px] uppercase leading-[1.6] tracking-[0.08em] text-redemption-ivory/80 sm:mt-5 sm:text-left sm:text-base sm:tracking-[0.12em]">
             {EVENT.includes.join(' · ')}
           </p>
         </div>
@@ -139,11 +141,6 @@ export default function RedemptionPage() {
             </p>
           </Reveal>
 
-          <Reveal delay={320}>
-            <p className="mt-10 max-w-md text-base leading-relaxed text-redemption-ivory/60 sm:mt-12 sm:text-lg">
-              We have thoughts. Desires. Habits. But are they who we are?
-            </p>
-          </Reveal>
         </div>
       </section>
 
@@ -165,9 +162,10 @@ export default function RedemptionPage() {
           </Reveal>
 
           <Reveal delay={200}>
-            <p className="mt-10 max-w-2xl font-editorial text-[clamp(1.4rem,4.6vw,2.4rem)] italic leading-[1.2]">
-              Kapila’s teaching doesn’t ask us to empty the mind or eliminate desire. It asks
-              what our consciousness is directed toward.
+            <p className="mt-10 max-w-2xl font-editorial text-[clamp(1.45rem,4.9vw,2.4rem)] italic leading-[1.25]">
+              Freedom isn’t about emptying the mind or eliminating desire.
+              <br className="hidden sm:block" /> It’s about changing what consciousness is
+              directed toward.
             </p>
           </Reveal>
         </div>
@@ -202,9 +200,9 @@ export default function RedemptionPage() {
           </ul>
 
           <Reveal delay={120}>
-            <p className="mt-10 max-w-2xl border-t border-redemption-ink/20 pt-6 text-sm leading-relaxed text-redemption-ink/60 sm:text-base">
+            <p className="mt-10 max-w-2xl border-t border-redemption-ink/20 pt-6 text-base leading-relaxed text-redemption-ink/70 sm:text-lg">
               Inspired by the dialogue between Kapila and Devahūti in the Śrīmad-Bhāgavatam and
-              the ancient analytical philosophy of Sāṅkhya.
+              an ancient yoga psychology called Sāṅkhya.
             </p>
           </Reveal>
         </div>
@@ -230,7 +228,7 @@ export default function RedemptionPage() {
           </Reveal>
 
           <Reveal delay={120}>
-            <p className="mt-6 font-grotesk text-[clamp(1.05rem,4vw,1.7rem)] font-bold uppercase leading-tight tracking-[-0.01em] text-redemption-ivory/75">
+            <p className="mt-6 font-grotesk text-[clamp(1.15rem,4.3vw,1.7rem)] font-bold uppercase leading-[1.35] tracking-[-0.01em] text-redemption-ivory/80">
               No previous experience.
               <br />
               No Sanskrit required.
@@ -292,16 +290,16 @@ export default function RedemptionPage() {
         <div className="mx-auto max-w-6xl border-t border-redemption-ivory/12 pt-6">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <Meta className="text-redemption-ivory/50">{EVENT.brand}</Meta>
-            <Meta className="text-redemption-ivory/35">
+            <Meta className="text-redemption-ivory/55">
               {EVENT.dateShort} · {EVENT.timeShort} · {EVENT.venue.city}
             </Meta>
           </div>
-          <p className="mt-5 max-w-2xl text-xs leading-relaxed text-redemption-ivory/35">
+          <p className="mt-5 max-w-2xl text-[13px] leading-relaxed text-redemption-ivory/60">
             A special {EVENT.brand} presentation taking place during a Tuesday Bhakti Night
             programme in Brooklyn. Contact details collected on this page are used to confirm
             your spot and send reminders for this event only.
           </p>
-          <p className="mt-3 max-w-2xl text-xs leading-relaxed text-redemption-ivory/25">
+          <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-redemption-ivory/50">
             {EVENT.disclaimer}
           </p>
         </div>
