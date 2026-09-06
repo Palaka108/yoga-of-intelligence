@@ -148,7 +148,7 @@ export default function ThanksPage() {
       <footer className="relative z-20 mx-auto w-full max-w-4xl border-t border-redemption-ivory/12 pt-6">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <Meta className="text-redemption-ivory/50">
-            {EVENT.brand} · {EVENT.brandPhrase}
+            {EVENT.brand}
           </Meta>
           <Link
             href="/redemption"

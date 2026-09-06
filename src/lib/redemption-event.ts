@@ -29,12 +29,11 @@ export const EVENT = {
     label: '305 Schermerhorn Street, Brooklyn, New York',
   },
 
-  // Entry is free; the house night is donation-based, so "free" is always
-  // paired with the invitation rather than left to imply "no money involved".
-  admission: 'FREE ENTRY',
-  admissionNote: 'Donations welcome',
-  admissionLong: 'Free to attend · Donations welcome',
-  includes: ['MUSIC', 'KIRTAN', 'INTERACTIVE PHILOSOPHY', 'MANTRA', 'FREE VEGETARIAN FEAST'],
+  // Positioned as generous rather than as a discount: there is no admission
+  // fee, but the page leads with the invitation, not with "FREE".
+  admission: 'DONATIONS WELCOME',
+  admissionLong: 'No admission fee · Donations welcome',
+  includes: ['KIRTAN MUSIC', 'INTERACTIVE PHILOSOPHY', 'MANTRA', 'VEGETARIAN FEAST'],
 
   // The night runs inside the venue's own Tuesday programme, and they keep
   // their own headcount. Offered on the thank-you page AFTER our own RSVP has
@@ -52,7 +51,7 @@ export const EVENT = {
   og: {
     title: 'WHO OWNS YOUR MIND? | REDEMPTION — Brooklyn, Sept. 22',
     description:
-      'A free Brooklyn evening exploring desire, consciousness and freedom through music, kirtan, ancient yoga psychology and mantra—followed by a vegetarian feast.',
+      'A Brooklyn evening exploring desire, consciousness and freedom through kirtan music, interactive philosophy and mantra—followed by a vegetarian feast. Donations welcome.',
   },
 } as const;
 

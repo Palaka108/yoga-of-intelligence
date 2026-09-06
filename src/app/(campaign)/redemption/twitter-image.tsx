@@ -3,7 +3,7 @@ import { EVENT } from '@/lib/redemption-event';
 
 export const runtime = 'edge';
 export const alt =
-  'REDEMPTION — Who owns your mind? A free evening of music, kirtan and consciousness in Brooklyn, Tuesday September 22.';
+  'REDEMPTION — Who owns your mind? An evening of kirtan music, philosophy and consciousness in Brooklyn, Tuesday September 22. Donations welcome.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -51,7 +51,7 @@ export default function OpengraphImage() {
               padding: '8px 16px',
             }}
           >
-            Free entry
+            Donations welcome
           </div>
         </div>
 
@@ -131,7 +131,7 @@ export default function OpengraphImage() {
                 {`${EVENT.dateShort} · ${EVENT.timeShort} · ${EVENT.venue.city}`}
               </div>
               <div style={{ display: 'flex', marginTop: 10, color: '#E2431F' }}>
-                Music · Kirtan · Free vegetarian feast
+                Kirtan music · Philosophy · Vegetarian feast
               </div>
             </div>
           </div>
