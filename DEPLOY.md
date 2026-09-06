@@ -134,11 +134,18 @@ Add these in Vercel Dashboard > Settings > Environment Variables:
 
 ## 9. Custom Domain
 
-After Vercel deployment:
-1. Add custom domain in Vercel: `qualiavibe.yogaofintelligence.com`
-2. Update DNS CNAME to point to `cname.vercel-dns.com`
-3. Update `NEXT_PUBLIC_SITE_URL` to the custom domain
-4. Add domain to GCP OAuth Authorized JavaScript Origins
+This repository is served by the Vercel project **`yoga-of-intelligence`**
+(team `pauls-projects-c3c57110`), which holds the apex domain
+**`yogaofintelligence.com`**.
+
+`qualiavibe.yogaofintelligence.com` belongs to a *different* Vercel project
+(`idealconnection`, built from `Palaka108/QualiaVibe`) and is not this app.
+An earlier version of this guide named it here in error.
+
+1. Confirm the domain under Vercel > the project > Settings > Domains
+2. DNS CNAME points to `cname.vercel-dns.com`
+3. Keep `NEXT_PUBLIC_SITE_URL` equal to that domain, with no trailing slash
+4. Add the domain to GCP OAuth Authorized JavaScript Origins
 
 ---
 
