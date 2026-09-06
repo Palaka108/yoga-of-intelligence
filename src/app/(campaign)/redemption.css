@@ -123,3 +123,18 @@
   background: rgba(14, 14, 14, 0.94);
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
+
+/* ------------------------------------------------------------
+   The direction motif: the outward path drifts, the redirected
+   path holds steady. Stilled under reduced motion by the block
+   above.
+   ------------------------------------------------------------ */
+.rdm-root .dir-outward {
+  animation: rdmDrift 3.5s linear infinite;
+}
+
+@keyframes rdmDrift {
+  to {
+    stroke-dashoffset: -36;
+  }
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { EVENT, MAPS_URL } from '@/lib/redemption-event';
 import Grain from './_components/Grain';
+import Direction from './_components/Direction';
 import Marquee from './_components/Marquee';
 import Reveal from './_components/Reveal';
 import RsvpForm from './_components/RsvpForm';
@@ -26,8 +27,8 @@ function Meta({ children, className = '' }: { children: React.ReactNode; classNa
 const EXPLORE = [
   {
     n: '01',
-    title: 'YOU ≠ YOUR MIND?',
-    body: 'What is the relationship between the conscious observer and the thoughts, emotions and impulses moving through us?',
+    title: 'YOU ARE NOT MERELY YOUR MIND',
+    body: 'If you can watch a thought arrive, you are not the thought. So what is the relationship between the one who is aware and everything moving through awareness?',
   },
   {
     n: '02',
@@ -37,20 +38,20 @@ const EXPLORE = [
   {
     n: '03',
     title: 'CONDITIONING',
-    body: 'An ancient model describing how different forces shape perception, behaviour and consciousness.',
+    body: 'An old model of three forces colouring everything we perceive and choose — clarity, craving, and inertia. Once you can name which one is driving, it stops driving unseen.',
   },
   {
     n: '04',
     title: 'REDIRECTION',
-    body: 'Instead of simply trying to silence the mind, what happens when attention is given somewhere higher?',
+    body: 'Not silencing the mind. Not wanting less. Pointing the same attention somewhere that changes what it does to you.',
   },
 ];
 
 const TIMELINE = [
   { time: '7:00', label: 'ARRIVE + CONNECT' },
   { time: '', label: 'MUSIC + KIRTAN' },
-  { time: '', label: 'THE REDEMPTION EXPERIENCE' },
-  { time: '', label: 'CONSCIOUSNESS + SĀṄKHYA' },
+  { time: '', label: 'DESIRE, CONDITIONING + FREEDOM' },
+  { time: '', label: 'MIND, SELF + SĀṄKHYA' },
   { time: '', label: 'MANTRA' },
   { time: '', label: 'FREE VEGETARIAN FEAST + COMMUNITY' },
   { time: '9:00', label: 'CLOSE' },
@@ -187,9 +188,12 @@ export default function RedemptionPage() {
             <div className="ml-auto mt-16 max-w-md sm:mt-24">
               <hr className="rdm-rule mb-6 text-redemption-ivory" />
               <p className="text-base leading-relaxed text-redemption-ivory/70 sm:text-lg">
-                Are you choosing your desires — or are your desires choosing you? What is the
-                difference between you and the thoughts moving through your mind?
+                If you can watch your thoughts, who is doing the watching? And are you choosing
+                your desires — or are they choosing you?
               </p>
+              <Meta className="mt-6 block text-redemption-vermilion">
+                Know the knower
+              </Meta>
             </div>
           </Reveal>
         </div>
@@ -215,7 +219,8 @@ export default function RedemptionPage() {
               </Reveal>
               <Reveal delay={160}>
                 <p className="mt-8 font-editorial text-[clamp(1.8rem,6vw,3.6rem)] italic leading-[1.1] text-redemption-vermilion">
-                  But what if wanting is part of what keeps us bound?
+                  But what if the question isn’t that we want — it’s what our wanting is aimed
+                  at?
                 </p>
               </Reveal>
             </div>
@@ -224,14 +229,13 @@ export default function RedemptionPage() {
               <Reveal delay={240}>
                 <hr className="rdm-rule mb-6" />
                 <p className="text-base leading-relaxed text-redemption-ink/75">
-                  Why do the things we chase for freedom sometimes become the things that
-                  control us?
+                  Why do the things we chase for freedom so often end up running the schedule?
                 </p>
                 <p className="mt-5 text-base leading-relaxed text-redemption-ink/75">
-                  Can consciousness be redirected? And what does freedom actually mean?
+                  And why do we spend years acquiring things that time quietly takes back?
                 </p>
                 <Meta className="mt-8 block text-redemption-ink/45">
-                  One evening · Four questions · No prerequisites
+                  One evening · No prerequisites
                 </Meta>
               </Reveal>
             </div>
@@ -240,13 +244,55 @@ export default function RedemptionPage() {
       </section>
 
       {/* ==========================================================
-          04 — THE EXPERIENCE
+          04 — THE TURN  (the hinge: accent takes the full ground)
+          ========================================================== */}
+      <section className="bg-redemption-vermilion px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <Meta className="text-redemption-ink/60">03 — The turn</Meta>
+          </Reveal>
+
+          <Reveal>
+            <h2 className="mt-12 font-grotesk text-[clamp(2.3rem,10vw,7rem)] font-black uppercase leading-[0.9] tracking-[-0.045em]">
+              Same consciousness.
+              <br />
+              Different direction.
+            </h2>
+          </Reveal>
+
+          <Reveal delay={140}>
+            <Direction className="mt-10 text-redemption-ink" />
+          </Reveal>
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <Reveal delay={180}>
+                <p className="font-editorial text-[clamp(1.5rem,5vw,2.6rem)] italic leading-[1.15]">
+                  Freedom isn’t emptying the mind. It’s changing what owns it.
+                </p>
+              </Reveal>
+            </div>
+            <div className="lg:col-span-5 lg:pt-3">
+              <Reveal delay={240}>
+                <p className="text-base leading-relaxed text-redemption-ink/80">
+                  Nothing here asks you to want less, think less, or feel less. The proposal is
+                  stranger and more useful than that: the same attention that gets captured can
+                  be aimed — and aiming it somewhere else changes what it does to you.
+                </p>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==========================================================
+          05 — THE EXPERIENCE
           ========================================================== */}
       <section className="relative overflow-hidden bg-redemption-ink px-5 py-24 sm:px-8 sm:py-36 lg:px-14">
         <Grain opacity={0.1} />
         <div className="relative z-20 mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">03 — The experience</Meta>
+            <Meta className="text-redemption-vermilion">04 — The experience</Meta>
           </Reveal>
 
           <Reveal>
@@ -257,26 +303,44 @@ export default function RedemptionPage() {
             </h2>
           </Reveal>
 
+          <Reveal delay={100}>
+            <p className="mt-6 font-editorial text-[clamp(1.4rem,4.6vw,2.2rem)] italic leading-snug text-redemption-ivory/80">
+              A different kind of Tuesday night in Brooklyn.
+            </p>
+          </Reveal>
+
           <Reveal delay={140}>
             <Waveform className="mt-10 text-redemption-vermilion/40" />
           </Reveal>
 
           <div className="mt-14 grid gap-10 lg:grid-cols-12">
             <ul className="lg:col-span-7">
-              {['MUSIC', 'KIRTAN', 'STORY', 'CONVERSATION', 'MANTRA', 'FREE VEGETARIAN FEAST'].map(
-                (item, i) => (
-                  <Reveal as="li" key={item} delay={i * 80}>
-                    <div className="flex items-baseline gap-5 border-b border-redemption-ivory/12 py-5">
-                      <Meta className="w-8 shrink-0 text-redemption-ivory/30">
-                        {String(i + 1).padStart(2, '0')}
-                      </Meta>
-                      <span className="font-grotesk text-[clamp(1.3rem,5vw,2.4rem)] font-bold uppercase tracking-[-0.02em] text-redemption-ivory">
-                        {item}
+              {[
+                { label: 'LIVE MUSIC', note: '' },
+                { label: 'KIRTAN', note: 'call-and-response mantra music' },
+                { label: 'STORY', note: '' },
+                { label: 'INTERACTIVE PHILOSOPHY', note: 'you talk too' },
+                { label: 'MANTRA', note: '' },
+                { label: 'FREE VEGETARIAN FEAST', note: '' },
+              ].map((item, i) => (
+                <Reveal as="li" key={item.label} delay={i * 80}>
+                  <div className="flex items-baseline gap-5 border-b border-redemption-ivory/12 py-5">
+                    <Meta className="w-8 shrink-0 text-redemption-ivory/30">
+                      {String(i + 1).padStart(2, '0')}
+                    </Meta>
+                    <span>
+                      <span className="font-grotesk text-[clamp(1.3rem,5vw,2.4rem)] font-bold uppercase leading-tight tracking-[-0.02em] text-redemption-ivory">
+                        {item.label}
                       </span>
-                    </div>
-                  </Reveal>
-                )
-              )}
+                      {item.note && (
+                        <span className="mt-1 block font-editorial text-base italic text-redemption-ivory/45 sm:text-lg">
+                          {item.note}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                </Reveal>
+              ))}
             </ul>
 
             <div className="lg:col-span-5 lg:pt-6">
@@ -287,8 +351,12 @@ export default function RedemptionPage() {
                 </p>
                 <p className="mt-6 text-base leading-relaxed text-redemption-ivory/65">
                   It is not a lecture. Nobody sits at the front for two hours while you take
-                  notes. Sound opens the room, an idea gets put on the table, we talk about it,
+                  notes. Sound opens the room, an idea gets put on the table, we argue about it,
                   and then we sing — and the singing turns out to be part of the argument.
+                </p>
+                <p className="mt-5 text-base leading-relaxed text-redemption-ivory/65">
+                  You don’t have to believe anything to join in. Listen, try it, and notice what
+                  happens to your attention. That’s the whole instruction.
                 </p>
                 <Meta className="mt-8 block text-redemption-ivory/40">
                   Come as you are · Stay as long as you like
@@ -305,7 +373,7 @@ export default function RedemptionPage() {
       <section className="bg-redemption-paper px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">04 — What we’ll explore</Meta>
+            <Meta className="text-redemption-vermilion">05 — What we’ll explore</Meta>
           </Reveal>
 
           <div className="mt-14 space-y-0">
@@ -347,7 +415,7 @@ export default function RedemptionPage() {
 
         <div className="relative z-20 mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">05 — An ancient map of a modern problem</Meta>
+            <Meta className="text-redemption-vermilion">06 — An ancient map of a modern problem</Meta>
           </Reveal>
 
           <div className="mt-14 grid gap-12 lg:grid-cols-12">
@@ -359,8 +427,8 @@ export default function RedemptionPage() {
               </Reveal>
               <Reveal delay={150}>
                 <p className="mt-8 font-editorial text-[clamp(1.5rem,5vw,2.6rem)] italic leading-[1.2] text-redemption-vermilion">
-                  a system called Sāṅkhya asked a surprisingly modern question: what is actually
-                  happening inside the machinery of human experience?
+                  an old conversation asked a surprisingly modern question: what actually binds
+                  the mind — and what makes consciousness free?
                 </p>
               </Reveal>
             </div>
@@ -369,14 +437,14 @@ export default function RedemptionPage() {
               <Reveal delay={220}>
                 <hr className="rdm-rule mb-6 text-redemption-ivory" />
                 <p className="text-base leading-relaxed text-redemption-ivory/70">
-                  Sāṅkhya is a map of the inner instrument — how perception, intelligence, ego and
-                  desire interact, and where the one who is aware of all of it actually sits.
+                  The evening draws on a dialogue between a teacher, Kapila, and his mother,
+                  Devahūti, and on the analytical system it belongs to — Sāṅkhya, a map of how
+                  attention, desire and identity actually operate.
                 </p>
                 <p className="mt-5 text-base leading-relaxed text-redemption-ivory/70">
-                  Much of what we will draw on comes from a conversation between a teacher, Kapila,
-                  and his mother, Devahūti, recorded in the Third Canto of the Śrīmad-Bhāgavatam.
-                  She asks him how to get free. His answer is not a belief system — it is an
-                  analysis.
+                  She asks him a direct question: how does a person get free? What comes back
+                  isn’t a belief system. It’s an analysis — and it holds up unreasonably well
+                  against a Tuesday in 2026.
                 </p>
                 <Meta className="mt-8 block text-redemption-ivory/40">
                   No background required · Nothing to sign up to
@@ -393,7 +461,7 @@ export default function RedemptionPage() {
       <section className="bg-redemption-paper-deep px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
         <div className="mx-auto max-w-4xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">06 — What your night looks like</Meta>
+            <Meta className="text-redemption-vermilion">07 — What your night looks like</Meta>
           </Reveal>
 
           <Reveal>
@@ -435,7 +503,7 @@ export default function RedemptionPage() {
         <Grain opacity={0.1} />
         <div className="relative z-20 mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">07 — Who this is for</Meta>
+            <Meta className="text-redemption-vermilion">08 — Who this is for</Meta>
           </Reveal>
 
           <Reveal>
@@ -477,7 +545,7 @@ export default function RedemptionPage() {
       <section className="bg-redemption-paper px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <Meta className="text-redemption-vermilion">08 — The feast</Meta>
+            <Meta className="text-redemption-vermilion">09 — The feast</Meta>
           </Reveal>
 
           <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:items-end">
@@ -498,7 +566,7 @@ export default function RedemptionPage() {
               <Reveal delay={180}>
                 <hr className="rdm-rule mb-6" />
                 <p className="font-grotesk text-xl font-black uppercase tracking-tight">
-                  Free vegetarian feast included.
+                  Free vegetarian feast. Because good conversations shouldn’t end hungry.
                 </p>
                 <p className="mt-5 text-base leading-relaxed text-redemption-ink/75">
                   Cooked fresh, served hot, eaten together. The night does not end with a
@@ -524,7 +592,7 @@ export default function RedemptionPage() {
       <section className="bg-redemption-paper px-5 pb-24 text-redemption-ink sm:px-8 sm:pb-36 lg:px-14">
         <div className="mx-auto max-w-6xl border-t border-redemption-ink/20 pt-16">
           <Reveal>
-            <Meta className="text-redemption-vermilion">09 — Your host</Meta>
+            <Meta className="text-redemption-vermilion">10 — Your host</Meta>
           </Reveal>
 
           <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:gap-14">

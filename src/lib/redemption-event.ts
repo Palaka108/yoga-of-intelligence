@@ -34,7 +34,7 @@ export const EVENT = {
   admission: 'FREE ENTRY',
   admissionNote: 'Donations welcome',
   admissionLong: 'Free to attend · Donations welcome',
-  includes: ['MUSIC', 'KIRTAN', 'CONVERSATION', 'FREE VEGETARIAN FEAST'],
+  includes: ['MUSIC', 'KIRTAN', 'INTERACTIVE PHILOSOPHY', 'MANTRA', 'FREE VEGETARIAN FEAST'],
 
   // The night runs inside the venue's own Tuesday programme, and they keep
   // their own headcount. Offered on the thank-you page AFTER our own RSVP has
