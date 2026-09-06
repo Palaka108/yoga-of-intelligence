@@ -170,3 +170,14 @@
     font-size: clamp(0.9rem, 3.4vw, 2.6rem);
   }
 }
+
+/* ------------------------------------------------------------
+   The global stylesheet sets smooth scrolling. Anyone who has
+   asked for reduced motion should get an instant jump instead
+   when the sticky CTA sends them to the form.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html:has(.rdm-root) {
+    scroll-behavior: auto;
+  }
+}

@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Thumb-reachable RSVP bar. Appears only once the hero has scrolled away and
- * hides again over the RSVP section itself, so it never covers the form.
+ * Thumb-reachable RSVP bar for phones.
+ *
+ * Appears only once the hero has scrolled away, hides again over the RSVP
+ * section so it never covers the form, and is hidden entirely on desktop —
+ * where the form is reachable without it and a fixed bar is just clutter.
  */
 export default function StickyCta() {
   const [visible, setVisible] = useState(false);
@@ -55,28 +58,22 @@ export default function StickyCta() {
       // drops the neighbouring utility.
       className={`rdm-sticky fixed inset-x-0 bottom-0 z-40 border-t border-redemption-ivory/10
                   px-4 pt-3 backdrop-blur-md transition-transform duration-500 ease-out
+                  md:hidden
                   ${visible ? 'translate-y-0' : 'translate-y-full'}`}
       aria-hidden={!visible}
     >
-      <div className="mx-auto flex max-w-5xl items-center gap-4">
-        <div className="hidden flex-1 sm:block">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-redemption-ivory/55">
-            Tue Sept 22 · 7–9 PM · Brooklyn
-          </p>
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-redemption-vermilion">
-            Donations welcome
-          </p>
-        </div>
-        <a
-          href="#rsvp"
-          tabIndex={visible ? 0 : -1}
-          className="w-full bg-redemption-vermilion px-6 py-4 text-center font-mono text-sm
-                     font-semibold uppercase tracking-[0.16em] text-redemption-ivory
-                     transition-colors duration-300 hover:bg-redemption-vermilion-deep sm:w-auto"
-        >
-          Reserve your spot
-        </a>
-      </div>
+      <a
+        href="#rsvp"
+        tabIndex={visible ? 0 : -1}
+        className="block w-full bg-redemption-vermilion px-6 py-4 text-center font-mono text-sm
+                   font-semibold uppercase tracking-[0.16em] text-redemption-ivory
+                   transition-colors duration-300 hover:bg-redemption-vermilion-deep"
+      >
+        Reserve your spot
+      </a>
+      <p className="mt-2 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-redemption-ivory/55">
+        Tue Sept 22 · 7–9 PM · Donations welcome
+      </p>
     </div>
   );
 }
