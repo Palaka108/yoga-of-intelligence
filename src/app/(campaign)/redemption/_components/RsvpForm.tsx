@@ -313,10 +313,21 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
           />
         </div>
 
-        {/* Honeypot — visually hidden, never announced, never focusable. */}
-        <div className="absolute left-[-9999px]" aria-hidden>
-          <label htmlFor="company">Company</label>
-          <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+        {/* Honeypot. Bots fill it, people never see it: removed from the
+            accessibility tree, out of the tab order, and taken out of layout
+            entirely rather than merely pushed off-screen. */}
+        <div className="rdm-honeypot" aria-hidden="true">
+          <label htmlFor="company" tabIndex={-1}>
+            Company
+          </label>
+          <input
+            id="company"
+            name="company"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+          />
         </div>
 
         <label className="flex cursor-pointer items-start gap-3 pt-1">
@@ -350,13 +361,13 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
                    hover:bg-redemption-vermilion-deep disabled:cursor-wait disabled:opacity-70
                    sm:text-base"
       >
-        {status === 'sending' ? 'Reserving…' : 'Reserve your spot — free'}
+        {status === 'sending' ? 'Reserving…' : 'Reserve your spot'}
       </button>
 
       <p className="mt-6 text-xs leading-relaxed text-redemption-ivory/45">
-        We collect your name and email to confirm your spot and send reminders for this
-        event. Nothing else. You can unsubscribe at any time, and we will not add you to
-        unrelated marketing. Text reminders are sent only if you tick the box above.
+        We use your name and email to confirm your spot and send reminders for this event
+        only — no membership, no unrelated marketing, unsubscribe any time. Texts are sent
+        only if you tick the box above.
       </p>
     </form>
   );

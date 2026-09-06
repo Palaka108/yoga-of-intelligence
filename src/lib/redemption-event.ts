@@ -1,20 +1,24 @@
 /**
- * Single source of truth for the REDEMPTION event.
+ * Single source of truth for the EMANCIPATION event.
  * Used by the page, the OpenGraph image, the .ics feed and the thank-you page,
  * so a date or venue change never has to be made twice.
  */
 
 export const EVENT = {
+  // The slug is the database key for RSVPs already collected. It intentionally
+  // keeps the original wording — renaming it would orphan existing rows.
   slug: 'redemption-2026-09-22',
   brand: 'Yoga of Intelligence',
-  brandPhrase: 'Know the Knower',
-  title: 'REDEMPTION',
-  headline: 'WHO OWNS YOUR MIND?',
+  title: 'EMANCIPATION',
+
+  // "Redemption Song" is referenced only as the conceptual doorway into the
+  // evening. No lyrics, no imagery, no recording, no implied endorsement.
+  songSubtitle: 'The Yoga of \u201cRedemption Song\u201d',
   subtitle: 'Desire, Consciousness & the Search for Freedom',
 
   // Tuesday, September 22, 2026 · 7:00–9:00 PM · America/New_York (EDT, UTC-4)
   dateLabel: 'Tuesday, September 22, 2026',
-  dateShort: 'TUE 09.22',
+  dateShort: 'TUE SEPT 22',
   timeLabel: '7:00 – 9:00 PM',
   timeShort: '7–9 PM',
   timezone: 'America/New_York',
@@ -29,12 +33,11 @@ export const EVENT = {
     label: '305 Schermerhorn Street, Brooklyn, New York',
   },
 
-  // Entry is free; the house night is donation-based, so "free" is always
-  // paired with the invitation rather than left to imply "no money involved".
-  admission: 'FREE ENTRY',
-  admissionNote: 'Donations welcome',
-  admissionLong: 'Free to attend · Donations welcome',
-  includes: ['MUSIC', 'KIRTAN', 'INTERACTIVE PHILOSOPHY', 'MANTRA', 'FREE VEGETARIAN FEAST'],
+  // Positioned as generous rather than as a discount: there is no admission
+  // fee, but the page leads with the invitation, not with "FREE".
+  admission: 'DONATIONS WELCOME',
+  admissionLong: 'No required admission fee · Donations welcome',
+  includes: ['LIVE KIRTAN', 'INTERACTIVE PHILOSOPHY', 'VEGETARIAN DINNER'],
 
   // The night runs inside the venue's own Tuesday programme, and they keep
   // their own headcount. Offered on the thank-you page AFTER our own RSVP has
@@ -49,10 +52,14 @@ export const EVENT = {
       | string
       | null,
 
+  // Shown in the footer. The song is an inspiration, not a licence.
+  disclaimer:
+    'Not affiliated with, endorsed or sponsored by Bob Marley, his estate or any rights holder. \u201cRedemption Song\u201d is referenced only as the conceptual starting point for the evening.',
+
   og: {
-    title: 'WHO OWNS YOUR MIND? | REDEMPTION — Brooklyn, Sept. 22',
+    title: 'EMANCIPATION — The Yoga of \u201cRedemption Song\u201d | Brooklyn, Sept 22',
     description:
-      'A free Brooklyn evening exploring desire, consciousness and freedom through music, kirtan, ancient yoga psychology and mantra—followed by a vegetarian feast.',
+      'A Brooklyn evening on desire, consciousness and what it actually means to become free — live kirtan, interactive philosophy and a vegetarian dinner. Donations welcome.',
   },
 } as const;
 

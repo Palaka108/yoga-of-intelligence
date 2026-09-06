@@ -28,7 +28,7 @@ export async function GET() {
   const eventUrl = `${siteUrl.replace(/\/$/, '')}/redemption`;
 
   const description = [
-    `${EVENT.headline} — ${EVENT.subtitle}.`,
+    `${EVENT.songSubtitle} — ${EVENT.subtitle}.`,
     '',
     EVENT.og.description,
     '',
@@ -47,7 +47,7 @@ export async function GET() {
     `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}`,
     `DTSTART:${EVENT.startUtc}`,
     `DTEND:${EVENT.endUtc}`,
-    `SUMMARY:${escape(`${EVENT.title} — ${EVENT.headline}`)}`,
+    `SUMMARY:${escape(`${EVENT.title} — ${EVENT.songSubtitle}`)}`,
     `DESCRIPTION:${escape(description)}`,
     `LOCATION:${escape(`${EVENT.venue.street}, ${EVENT.venue.city}, ${EVENT.venue.region}`)}`,
     `URL:${eventUrl}`,

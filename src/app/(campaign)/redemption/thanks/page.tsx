@@ -30,7 +30,7 @@ export default function ThanksPage() {
       <Grain />
 
       <div className="pointer-events-none absolute inset-x-0 top-1/3 z-0 opacity-[0.045]">
-        <Marquee words={['REDEMPTION', 'SEE YOU THERE', 'BROOKLYN']} />
+        <Marquee words={['EMANCIPATION', 'SEE YOU THERE', 'BROOKLYN']} />
       </div>
 
       <div className="relative z-20 mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center py-10">
@@ -148,7 +148,7 @@ export default function ThanksPage() {
       <footer className="relative z-20 mx-auto w-full max-w-4xl border-t border-redemption-ivory/12 pt-6">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <Meta className="text-redemption-ivory/50">
-            {EVENT.brand} · {EVENT.brandPhrase}
+            {EVENT.brand}
           </Meta>
           <Link
             href="/redemption"

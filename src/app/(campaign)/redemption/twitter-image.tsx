@@ -3,7 +3,7 @@ import { EVENT } from '@/lib/redemption-event';
 
 export const runtime = 'edge';
 export const alt =
-  'REDEMPTION — Who owns your mind? A free evening of music, kirtan and consciousness in Brooklyn, Tuesday September 22.';
+  'EMANCIPATION — The Yoga of “Redemption Song”. An evening of live kirtan, philosophy and consciousness in Brooklyn, Tuesday September 22. Donations welcome.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -51,7 +51,7 @@ export default function OpengraphImage() {
               padding: '8px 16px',
             }}
           >
-            Free entry
+            Donations welcome
           </div>
         </div>
 
@@ -60,33 +60,34 @@ export default function OpengraphImage() {
           <div
             style={{
               display: 'flex',
-              fontSize: 132,
+              fontSize: 116,
               fontWeight: 900,
               lineHeight: 0.86,
-              letterSpacing: -6,
+              letterSpacing: -5,
               textTransform: 'uppercase',
             }}
           >
-            Who owns
+            {EVENT.title}
           </div>
           <div
             style={{
               display: 'flex',
-              fontSize: 132,
-              fontWeight: 900,
-              lineHeight: 0.86,
-              letterSpacing: -6,
+              marginTop: 14,
+              fontSize: 44,
+              fontWeight: 700,
+              lineHeight: 1.05,
+              letterSpacing: -1,
               textTransform: 'uppercase',
               color: '#E2431F',
             }}
           >
-            your mind?
+            {EVENT.songSubtitle}
           </div>
           <div
             style={{
               display: 'flex',
-              marginTop: 26,
-              fontSize: 30,
+              marginTop: 20,
+              fontSize: 28,
               color: 'rgba(244,239,230,0.8)',
             }}
           >
@@ -108,13 +109,13 @@ export default function OpengraphImage() {
             <div
               style={{
                 display: 'flex',
-                fontSize: 62,
-                fontWeight: 900,
-                letterSpacing: -2,
+                fontSize: 24,
+                letterSpacing: 3,
                 textTransform: 'uppercase',
+                color: 'rgba(244,239,230,0.55)',
               }}
             >
-              {EVENT.title}
+              {EVENT.venue.street}
             </div>
             <div
               style={{
@@ -131,7 +132,7 @@ export default function OpengraphImage() {
                 {`${EVENT.dateShort} · ${EVENT.timeShort} · ${EVENT.venue.city}`}
               </div>
               <div style={{ display: 'flex', marginTop: 10, color: '#E2431F' }}>
-                Music · Kirtan · Free vegetarian feast
+                Live kirtan · Interactive philosophy · Vegetarian dinner
               </div>
             </div>
           </div>
