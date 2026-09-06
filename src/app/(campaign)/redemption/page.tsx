@@ -298,7 +298,7 @@ export default function RedemptionPage() {
           </div>
           <p className="mt-5 max-w-2xl text-[13px] leading-relaxed text-redemption-ivory/60">
             A special {EVENT.brand} presentation taking place during a Tuesday Bhakti Night
-            programme in Brooklyn. Contact details collected on this page are used to confirm
+            program in Brooklyn. Contact details collected on this page are used to confirm
             your spot and send reminders for this event only.
           </p>
           <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-redemption-ivory/50">

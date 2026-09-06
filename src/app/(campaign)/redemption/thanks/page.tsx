@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { EVENT, MAPS_URL } from '@/lib/redemption-event';
 import Grain from '../_components/Grain';
 import Marquee from '../_components/Marquee';
+import RsvpConversion from '../_components/RsvpConversion';
 import ShareButton from '../_components/ShareButton';
 import Waveform from '../_components/Waveform';
 
@@ -27,6 +28,7 @@ function Meta({ children, className = '' }: { children: React.ReactNode; classNa
 export default function ThanksPage() {
   return (
     <main className="relative flex min-h-[100svh] flex-col overflow-hidden bg-redemption-ink px-5 py-10 sm:px-8 lg:px-14">
+      <RsvpConversion />
       <Grain />
 
       <div className="pointer-events-none absolute inset-x-0 top-1/3 z-0 opacity-[0.045]">
@@ -122,7 +124,7 @@ export default function ThanksPage() {
             <Meta className="text-redemption-ivory/40">One optional extra</Meta>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-redemption-ivory/70">
               You’re on our list — that part is done. The evening runs inside{' '}
-              {EVENT.venueName}’s Tuesday programme, and they keep their own headcount for
+              {EVENT.venueName}’s Tuesday program, and they keep their own headcount for
               seating and prasadam. Adding your name there too helps them plan.
             </p>
             <a
