@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './redemption.css';
 import { Archivo, Instrument_Serif } from 'next/font/google';
 import { EVENT } from '@/lib/redemption-event';
+import GoogleTag from './redemption/_components/GoogleTag';
 import MetaPixel from './redemption/_components/MetaPixel';
 
 /**
@@ -56,6 +57,7 @@ export default function CampaignLayout({
     <div
       className={`rdm-root ${grotesk.variable} ${editorial.variable} min-h-screen bg-redemption-ink font-grotesk text-redemption-ivory antialiased`}
     >
+      <GoogleTag />
       <MetaPixel />
       {children}
     </div>

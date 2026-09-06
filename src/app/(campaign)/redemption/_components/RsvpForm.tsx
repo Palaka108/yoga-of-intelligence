@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { UTM_KEYS } from '@/lib/redemption-event';
+import { RSVP_CONVERSION_KEY } from './GoogleTag';
 import { trackLead } from './MetaPixel';
 
 const UTM_STORAGE_KEY = 'rdm_attribution';
@@ -233,6 +234,19 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
       // Meta `Lead` fires here and only here — after a confirmed registration.
       if (result?.eventId) trackLead(result.eventId);
 
+      // Hand the Google conversion to the thank-you page. Written only on a
+      // confirmed 200, so a direct visit to /redemption/thanks counts nothing.
+      if (result?.eventId) {
+        try {
+          sessionStorage.setItem(
+            RSVP_CONVERSION_KEY,
+            JSON.stringify({ eventId: result.eventId, at: Date.now() })
+          );
+        } catch {
+          /* private mode — the RSVP still succeeded, only the count is lost */
+        }
+      }
+
       router.push('/redemption/thanks');
     } catch {
       setError('Network problem. Please try again.');
@@ -325,6 +339,11 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
             tabIndex={-1}
             autoComplete="off"
             aria-hidden="true"
+            // Password managers ignore native autocomplete hints; these are the
+            // opt-outs 1Password and LastPass respect.
+            data-1p-ignore
+            data-lpignore="true"
+            data-form-type="other"
           />
         </div>
 

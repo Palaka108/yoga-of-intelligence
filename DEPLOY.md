@@ -272,3 +272,35 @@ browser event.
 ### Still to supply
 
 - Host portrait and biography (section 09 renders labelled placeholders).
+
+### Google Ads / GA4 conversion tracking
+
+No Google tag existed before this. `GoogleTag` (in the campaign layout) loads
+`gtag.js` only when at least one of these is set, so the page emits nothing
+until you configure it:
+
+| Variable | Example | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | `G-XXXXXXXXXX` | GA4 property. Enables the `emancipation_rsvp` event. |
+| `NEXT_PUBLIC_GOOGLE_ADS_ID` | `AW-XXXXXXXXX` | Google Ads conversion ID. |
+| `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | e.g. `abcDEfGhIjk` | Label from the Google Ads conversion action. Required alongside the Ads ID. |
+
+All are `NEXT_PUBLIC_` and read at build time — set them in Vercel and
+redeploy for them to take effect.
+
+**How the conversion fires.** On a confirmed 200 from `/api/redemption/rsvp`,
+the form writes a short-lived marker to `sessionStorage`. The thank-you page
+reads that marker exactly once, clears it, and then fires:
+
+- GA4: `emancipation_rsvp` with the RSVP's `event_id`
+- Google Ads: `conversion` to `AW-…/LABEL` with `transaction_id` set to the
+  same id, so Google can deduplicate
+
+Because the marker is consumed on read and expires after 15 minutes, a direct
+visit, a refresh, a bookmark or a crawler on `/redemption/thanks` counts
+nothing. Page views, CTA clicks, form starts and validation errors never
+count.
+
+The same `event_id` is used for the Meta `Lead` event and stored on the row in
+`yoi_rsvps.meta_event_id`, so one registration can be reconciled across Google,
+Meta and the database.
