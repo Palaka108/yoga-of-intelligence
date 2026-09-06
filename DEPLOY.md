@@ -134,11 +134,18 @@ Add these in Vercel Dashboard > Settings > Environment Variables:
 
 ## 9. Custom Domain
 
-After Vercel deployment:
-1. Add custom domain in Vercel: `qualiavibe.yogaofintelligence.com`
-2. Update DNS CNAME to point to `cname.vercel-dns.com`
-3. Update `NEXT_PUBLIC_SITE_URL` to the custom domain
-4. Add domain to GCP OAuth Authorized JavaScript Origins
+This repository is served by the Vercel project **`yoga-of-intelligence`**
+(team `pauls-projects-c3c57110`), which holds the apex domain
+**`yogaofintelligence.com`**.
+
+`qualiavibe.yogaofintelligence.com` belongs to a *different* Vercel project
+(`idealconnection`, built from `Palaka108/QualiaVibe`) and is not this app.
+An earlier version of this guide named it here in error.
+
+1. Confirm the domain under Vercel > the project > Settings > Domains
+2. DNS CNAME points to `cname.vercel-dns.com`
+3. Keep `NEXT_PUBLIC_SITE_URL` equal to that domain, with no trailing slash
+4. Add the domain to GCP OAuth Authorized JavaScript Origins
 
 ---
 
@@ -191,3 +198,77 @@ yoga-of-intelligence/
 ├── middleware.ts                     # Auth + route protection
 └── DEPLOY.md                        # This file
 ```
+
+---
+
+## 11. Campaign landing page — `/redemption`
+
+A public, statically-rendered event page for **REDEMPTION** (Tue 22 Sep 2026,
+Brooklyn). It lives in the `(campaign)` route group and shares nothing visually
+with the portal: its palette, fonts and CSS are scoped to that group, so the
+`sacred` theme is untouched.
+
+### Routes
+
+| Route | Notes |
+|---|---|
+| `/redemption` | The landing page. Static, ~95 kB first load. |
+| `/redemption/thanks` | Post-RSVP confirmation. `noindex`. |
+| `/api/redemption/rsvp` | `POST` — validates and stores an RSVP. |
+| `/api/redemption/autosave` | `POST` — stores partially-filled forms. |
+| `/api/redemption/ics` | `GET` — `redemption.ics` calendar file. |
+| `/api/redemption/export` | `GET` — CSV export (token-guarded). |
+
+`middleware.ts` skips `/redemption` entirely, so the page never pays for a
+Supabase auth round-trip and is never caught by portal gating.
+
+### Database
+
+Run `supabase/migrations/003_yoi_rsvps.sql` and `004_yoi_rsvp_drafts.sql`.
+
+- `yoi_rsvps` — confirmed registrations, one row per person per event.
+- `yoi_rsvp_drafts` — forms autosaved while being filled in. A draft whose
+  `converted_at` is null is someone who left contact details and did not
+  finish.
+
+Both have RLS enabled with **no policies**: they are unreadable with the anon
+key, and only the server-side route handlers (service-role) write to them.
+
+### Environment variables
+
+Already present, reused as-is:
+
+- `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_SITE_URL` — must be set **at build time**; it is baked into the
+  OpenGraph URLs and the `.ics` file.
+
+New, all optional — the page works without them:
+
+- `NEXT_PUBLIC_META_PIXEL_ID` — when absent, no pixel code is emitted at all.
+  Set it and redeploy to switch tracking on.
+- `RSVP_EXPORT_TOKEN` — required for the CSV export route; without it the
+  route refuses rather than defaulting to open.
+
+### Exporting the RSVP list
+
+```bash
+# confirmed registrations
+curl -O -J "https://<domain>/api/redemption/export?token=$RSVP_EXPORT_TOKEN"
+
+# people who started the form and did not finish
+curl -O -J "https://<domain>/api/redemption/export?token=$RSVP_EXPORT_TOKEN&type=partial"
+```
+
+Or query `yoi_rsvps` directly in the Supabase SQL editor.
+
+### Meta Pixel
+
+`PageView` fires on load. The standard **`Lead`** event fires **only** after
+the RSVP endpoint returns a success — never on page view and never on a button
+click. Each submission carries an `eventID` stored on the row, so adding the
+server-side Conversions API later will deduplicate correctly against the
+browser event.
+
+### Still to supply
+
+- Host portrait and biography (section 09 renders labelled placeholders).
