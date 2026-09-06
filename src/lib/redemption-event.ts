@@ -29,7 +29,11 @@ export const EVENT = {
     label: '305 Schermerhorn Street, Brooklyn, New York',
   },
 
-  admission: 'FREE',
+  // Entry is free; the house night is donation-based, so "free" is always
+  // paired with the invitation rather than left to imply "no money involved".
+  admission: 'FREE ENTRY',
+  admissionNote: 'Donations welcome',
+  admissionLong: 'Free to attend · Donations welcome',
   includes: ['MUSIC', 'KIRTAN', 'CONVERSATION', 'FREE VEGETARIAN FEAST'],
 
   og: {

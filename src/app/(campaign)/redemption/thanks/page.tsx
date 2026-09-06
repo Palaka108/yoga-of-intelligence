@@ -80,7 +80,9 @@ export default function ThanksPage() {
               <dt>
                 <Meta className="text-redemption-ivory/40">Admission</Meta>
               </dt>
-              <dd className="mt-2 text-base text-redemption-ivory/85">Free</dd>
+              <dd className="mt-2 text-base leading-relaxed text-redemption-ivory/85">
+                {EVENT.admissionLong}
+              </dd>
             </div>
             <div>
               <dt>

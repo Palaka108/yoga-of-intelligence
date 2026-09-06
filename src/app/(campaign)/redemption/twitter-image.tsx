@@ -51,7 +51,7 @@ export default function OpengraphImage() {
               padding: '8px 16px',
             }}
           >
-            Free
+            Free entry
           </div>
         </div>
 

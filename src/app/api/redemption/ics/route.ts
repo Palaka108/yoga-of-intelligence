@@ -32,7 +32,7 @@ export async function GET() {
     '',
     EVENT.og.description,
     '',
-    `Admission: ${EVENT.admission}`,
+    `Admission: ${EVENT.admissionLong}`,
     eventUrl,
   ].join('\n');
 

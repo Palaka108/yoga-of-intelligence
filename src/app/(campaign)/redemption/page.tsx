@@ -125,7 +125,7 @@ export default function RedemptionPage() {
               ['Date', EVENT.dateShort],
               ['Time', EVENT.timeShort],
               ['Where', 'Brooklyn'],
-              ['Admission', 'Free'],
+              ['Admission', 'Free entry'],
             ].map(([label, value]) => (
               <div key={label}>
                 <dt>
@@ -149,6 +149,9 @@ export default function RedemptionPage() {
 
           <Meta className="mt-4 block text-center text-redemption-ivory/55 sm:mt-6 sm:text-left">
             {EVENT.includes.join(' • ')}
+          </Meta>
+          <Meta className="mt-2 block text-center text-redemption-ivory/40 sm:text-left">
+            Free to attend · Donations welcome
           </Meta>
         </div>
       </section>
@@ -502,6 +505,10 @@ export default function RedemptionPage() {
                   conclusion — it ends with a plate in your hand and a conversation you did not
                   plan on having.
                 </p>
+                <p className="mt-5 text-base leading-relaxed text-redemption-ink/75">
+                  There is no ticket and no charge. The evening runs on donations, so give
+                  something if it moved you and nothing if it didn’t — both are genuinely fine.
+                </p>
                 <Meta className="mt-7 block text-redemption-ink/45">
                   Bring a friend · Bring an appetite
                 </Meta>
@@ -602,7 +609,7 @@ export default function RedemptionPage() {
                   {[
                     ['When', `${EVENT.dateLabel} · ${EVENT.timeLabel}`],
                     ['Where', `${EVENT.venue.street}, ${EVENT.venue.city}, ${EVENT.venue.region}`],
-                    ['Admission', 'Free'],
+                    ['Admission', EVENT.admissionLong],
                     ['Includes', EVENT.includes.join(' · ')],
                   ].map(([label, value]) => (
                     <div key={label} className="border-t border-redemption-ivory/15 pt-4">
