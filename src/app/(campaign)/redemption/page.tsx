@@ -29,14 +29,14 @@ function Meta({ children, className = '' }: { children: React.ReactNode; classNa
 const EXPERIENCE = [
   { label: 'LIVE KIRTAN', note: 'Call-and-response mantra music' },
   { label: 'INTERACTIVE PHILOSOPHY', note: 'Ideas explored together, not a lecture' },
-  { label: 'VEGETARIAN FEAST', note: 'Food, conversation and community afterward' },
+  { label: 'VEGETARIAN DINNER', note: 'Food, conversation and community afterward' },
 ];
 
 /* Shape of the night, not a run-of-show. Only the 7-9 bounds are real times. */
 const TIMELINE = [
   { time: '7 PM', label: 'ARRIVE + LIVE KIRTAN' },
   { time: '', label: 'CONVERSATION + PHILOSOPHY' },
-  { time: '', label: 'VEGETARIAN FEAST + COMMUNITY' },
+  { time: '', label: 'VEGETARIAN DINNER + COMMUNITY' },
   { time: '9 PM', label: 'CLOSE' },
 ];
 
@@ -396,7 +396,7 @@ export default function RedemptionPage() {
       </section>
 
       {/* ==========================================================
-          05 — COME CURIOUS  (who it's for, and the feast)
+          05 — COME CURIOUS  (who it's for, and the dinner)
           ========================================================== */}
       <section className="bg-redemption-paper-deep px-5 py-24 text-redemption-ink sm:px-8 sm:py-36 lg:px-14">
         <div className="mx-auto max-w-6xl">
@@ -442,7 +442,7 @@ export default function RedemptionPage() {
             </div>
           </Reveal>
 
-          {/* --- the feast --- */}
+          {/* --- the dinner --- */}
           <div className="mt-24 border-t border-redemption-ink/20 pt-16 sm:mt-32">
             <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
               <div className="lg:col-span-7">
@@ -461,7 +461,7 @@ export default function RedemptionPage() {
               <div className="lg:col-span-5">
                 <Reveal delay={160}>
                   <p className="font-grotesk text-lg font-black uppercase leading-tight tracking-tight sm:text-xl">
-                    Vegetarian feast. Because good conversations shouldn’t end hungry.
+                    Vegetarian dinner. Because good conversations shouldn’t end hungry.
                   </p>
                   <p className="mt-5 text-base leading-relaxed text-redemption-ink/75">
                     Cooked fresh, served hot, eaten together. The night doesn’t end with a

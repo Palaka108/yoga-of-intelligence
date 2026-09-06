@@ -37,7 +37,7 @@ export const EVENT = {
   // fee, but the page leads with the invitation, not with "FREE".
   admission: 'DONATIONS WELCOMED',
   admissionLong: 'No required admission fee · Donations welcomed',
-  includes: ['LIVE KIRTAN', 'INTERACTIVE PHILOSOPHY', 'VEGETARIAN FEAST'],
+  includes: ['LIVE KIRTAN', 'INTERACTIVE PHILOSOPHY', 'VEGETARIAN DINNER'],
 
   // The night runs inside the venue's own Tuesday programme, and they keep
   // their own headcount. Offered on the thank-you page AFTER our own RSVP has
@@ -59,7 +59,7 @@ export const EVENT = {
   og: {
     title: 'EMANCIPATION — The Yoga of \u201cRedemption Song\u201d | Brooklyn, Sept 22',
     description:
-      'A Brooklyn evening on desire, consciousness and what it actually means to become free — live kirtan, interactive philosophy and a vegetarian feast. Donations welcomed.',
+      'A Brooklyn evening on desire, consciousness and what it actually means to become free — live kirtan, interactive philosophy and a vegetarian dinner. Donations welcomed.',
   },
 } as const;
 

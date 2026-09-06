@@ -132,7 +132,7 @@ export default function OpengraphImage() {
                 {`${EVENT.dateShort} · ${EVENT.timeShort} · ${EVENT.venue.city}`}
               </div>
               <div style={{ display: 'flex', marginTop: 10, color: '#E2431F' }}>
-                Live kirtan · Interactive philosophy · Vegetarian feast
+                Live kirtan · Interactive philosophy · Vegetarian dinner
               </div>
             </div>
           </div>
