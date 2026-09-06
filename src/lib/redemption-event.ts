@@ -36,6 +36,19 @@ export const EVENT = {
   admissionLong: 'Free to attend · Donations welcome',
   includes: ['MUSIC', 'KIRTAN', 'CONVERSATION', 'FREE VEGETARIAN FEAST'],
 
+  // The night runs inside the venue's own Tuesday programme, and they keep
+  // their own headcount. Offered on the thank-you page AFTER our own RSVP has
+  // been recorded and the Meta conversion has fired, so attribution is intact.
+  //
+  // NOTE: this URL follows the pattern of the venue's published Sept 1 listing
+  // (bhakti-night-2026-09-01-19-00). It has not been opened and confirmed —
+  // check it once, and set to null to hide the block entirely.
+  venueName: 'Bhakti School NYC',
+  venueRsvpUrl:
+    'https://www.bhaktischoolnyc.com/event-details/bhakti-night-2026-09-22-19-00' as
+      | string
+      | null,
+
   og: {
     title: 'WHO OWNS YOUR MIND? | REDEMPTION — Brooklyn, Sept. 22',
     description:

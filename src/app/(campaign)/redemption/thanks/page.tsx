@@ -118,6 +118,28 @@ export default function ThanksPage() {
           <ShareButton url={shareUrl} />
         </div>
 
+        {EVENT.venueRsvpUrl && (
+          <div className="mt-12 border-t border-redemption-ivory/15 pt-8">
+            <Meta className="text-redemption-ivory/40">One optional extra</Meta>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-redemption-ivory/70">
+              You’re on our list — that part is done. The evening runs inside{' '}
+              {EVENT.venueName}’s Tuesday programme, and they keep their own headcount for
+              seating and prasadam. Adding your name there too helps them plan.
+            </p>
+            <a
+              href={EVENT.venueRsvpUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-block border-b border-redemption-ivory/40 pb-1 font-mono
+                         text-[11px] uppercase tracking-[0.22em] text-redemption-ivory/70
+                         transition-colors hover:border-redemption-vermilion
+                         hover:text-redemption-vermilion"
+            >
+              Also tell the venue ↗
+            </a>
+          </div>
+        )}
+
         <p className="mt-10 max-w-xl text-sm leading-relaxed text-redemption-ivory/50">
           One more thing: this is better with someone else. Send it to the friend who always
           starts the conversation you end up thinking about for a week.
