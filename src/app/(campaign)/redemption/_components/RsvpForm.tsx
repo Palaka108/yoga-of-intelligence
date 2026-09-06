@@ -86,6 +86,9 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
   const attribution = useAttribution();
   const draftId = useDraftId();
   const [status, setStatus] = useState<'idle' | 'sending' | 'error'>('idle');
+  // The phone field only exists once someone asks for reminders. Nobody who
+  // just wants to RSVP should have to look at it, let alone skip past it.
+  const [wantsTexts, setWantsTexts] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -243,9 +246,14 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
   }, [status]);
 
   const fieldClass =
-    'w-full border-b border-redemption-ivory/25 bg-transparent px-0 py-4 text-lg text-redemption-ivory ' +
-    'placeholder:text-redemption-ivory/35 focus:border-redemption-vermilion focus:outline-none ' +
+    'w-full border-b border-redemption-ivory/25 bg-transparent px-0 py-3.5 text-lg text-redemption-ivory ' +
+    // 35% was unreadable on a real phone; 55% is legible while still clearly
+    // subordinate to text the visitor has typed.
+    'placeholder:text-redemption-ivory/55 focus:border-redemption-vermilion focus:outline-none ' +
     'transition-colors duration-300';
+
+  const labelClass =
+    'font-mono text-[12px] uppercase tracking-[0.18em] text-redemption-ivory/60';
 
   return (
     <form
@@ -257,12 +265,9 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
       noValidate
       className="w-full max-w-xl"
     >
-      <div className="space-y-7">
+      <div className="space-y-6">
         <div>
-          <label
-            htmlFor="firstName"
-            className="font-mono text-[11px] uppercase tracking-[0.22em] text-redemption-ivory/50"
-          >
+          <label htmlFor="firstName" className={labelClass}>
             First name
           </label>
           <input
@@ -277,10 +282,7 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
         </div>
 
         <div>
-          <label
-            htmlFor="email"
-            className="font-mono text-[11px] uppercase tracking-[0.22em] text-redemption-ivory/50"
-          >
+          <label htmlFor="email" className={labelClass}>
             Email
           </label>
           <input
@@ -291,24 +293,6 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
             autoComplete="email"
             required
             placeholder="you@email.com"
-            className={fieldClass}
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="phone"
-            className="font-mono text-[11px] uppercase tracking-[0.22em] text-redemption-ivory/50"
-          >
-            Mobile <span className="normal-case tracking-normal">(optional)</span>
-          </label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="(000) 000-0000"
             className={fieldClass}
           />
         </div>
@@ -344,16 +328,46 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
           />
         </div>
 
-        <label className="flex cursor-pointer items-start gap-3 pt-1">
-          <input
-            type="checkbox"
-            name="smsConsent"
-            className="mt-1 h-5 w-5 shrink-0 accent-redemption-vermilion"
-          />
-          <span className="text-sm leading-relaxed text-redemption-ivory/70">
-            Text me an event reminder.
-          </span>
-        </label>
+        <div>
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              name="smsConsent"
+              checked={wantsTexts}
+              onChange={(e) => setWantsTexts(e.target.checked)}
+              aria-controls="phone-field"
+              aria-expanded={wantsTexts}
+              className="mt-0.5 h-5 w-5 shrink-0 accent-redemption-vermilion"
+            />
+            <span className="text-[15px] leading-relaxed text-redemption-ivory/80">
+              Text me an event reminder
+            </span>
+          </label>
+
+          {/* Revealed only on request. Rendered conditionally rather than
+              hidden, so it is never in the tab order or announced when the
+              visitor has not asked for texts. */}
+          {wantsTexts && (
+            <div id="phone-field" className="rdm-reveal mt-6">
+              <label htmlFor="phone" className={labelClass}>
+                Mobile number
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                autoFocus
+                placeholder="(000) 000-0000"
+                className={fieldClass}
+              />
+              <p className="mt-3 text-[13px] leading-relaxed text-redemption-ivory/60">
+                By providing your number, you agree to receive reminder texts for this event.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {error && (
@@ -370,18 +384,17 @@ export default function RsvpForm({ id = 'rsvp' }: { id?: string }) {
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="mt-10 w-full bg-redemption-vermilion px-8 py-5 font-mono text-sm font-semibold uppercase
+        className="mt-8 w-full bg-redemption-vermilion px-8 py-4 font-mono text-sm font-semibold uppercase
                    tracking-[0.18em] text-redemption-ivory transition-colors duration-300
                    hover:bg-redemption-vermilion-deep disabled:cursor-wait disabled:opacity-70
-                   sm:text-base"
+                   sm:py-5 sm:text-base"
       >
-        {status === 'sending' ? 'Reserving…' : 'Reserve your spot'}
+        {status === 'sending' ? 'Reserving…' : 'Reserve my spot'}
       </button>
 
-      <p className="mt-6 text-xs leading-relaxed text-redemption-ivory/45">
-        We use your name and email to confirm your spot and send reminders for this event
-        only — no membership, no unrelated marketing, unsubscribe any time. Texts are sent
-        only if you tick the box above.
+      <p className="mt-5 text-[13px] leading-relaxed text-redemption-ivory/60">
+        We’ll only use your information to confirm your RSVP and send reminders for this
+        event.
       </p>
     </form>
   );

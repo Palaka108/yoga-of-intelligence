@@ -181,3 +181,29 @@
     scroll-behavior: auto;
   }
 }
+
+/* ------------------------------------------------------------
+   The mobile-number field appearing when someone asks for text
+   reminders. A short, quiet reveal — stilled entirely for anyone
+   who prefers reduced motion.
+   ------------------------------------------------------------ */
+.rdm-root .rdm-reveal {
+  animation: rdmReveal 0.28s ease-out both;
+}
+
+@keyframes rdmReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rdm-root .rdm-reveal {
+    animation: none;
+  }
+}

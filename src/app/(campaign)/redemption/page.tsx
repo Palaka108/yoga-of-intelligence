@@ -215,8 +215,10 @@ export default function RedemptionPage() {
         id="rsvp-section"
         className="relative overflow-hidden bg-redemption-ink px-5 py-16 sm:px-8 sm:py-24 lg:px-14"
       >
-        <Grain opacity={0.14} />
-        <div className="pointer-events-none absolute inset-x-0 bottom-10 z-0 opacity-[0.05]">
+        {/* The calmest section on the page: the visitor is already persuaded,
+            so the decoration steps back rather than competing with the form. */}
+        <Grain opacity={0.09} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-0 opacity-[0.028]">
           <Marquee words={['EMANCIPATION', 'BROOKLYN', 'SEPT 22']} />
         </div>
 
