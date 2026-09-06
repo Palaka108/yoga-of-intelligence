@@ -45,8 +45,7 @@ export default function ThanksPage() {
         <Waveform className="mt-8 text-redemption-ivory/25" />
 
         <p className="mt-8 max-w-xl font-editorial text-[clamp(1.3rem,4.5vw,2rem)] italic leading-snug text-redemption-ivory/85">
-          Check your inbox for the confirmation. Then put it in your calendar before life gets in
-          the way.
+          That’s it — you’re on the list. Put it in your calendar before life gets in the way.
         </p>
 
         {/* event card */}
