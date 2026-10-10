@@ -88,6 +88,12 @@ export default function SplashPage() {
               </button>
             </div>
           )}
+          <a
+            href="/journey"
+            className="mt-10 inline-block font-display text-sm uppercase tracking-[0.22em] text-white/45 transition-colors hover:text-sacred-gold-light"
+          >
+            The Journey
+          </a>
         </div>
       </div>
 
