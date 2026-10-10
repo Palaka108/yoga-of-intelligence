@@ -25,7 +25,8 @@ Required variables:
 - `ELEVENLABS_API_KEY` — Server-only key used when someone signs up at `/join`. Do not prefix with `NEXT_PUBLIC_`.
 - `TEMPLATE_AGENT_ID` — Optional. Agent duplicated for each new signup. Defaults to `agent_2901m4hrxsemfj0thpsyxfqxr54f`.
 - `JOIN_CODE` — Optional. When set, `/join` requires this code.
-- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` — Upstash Redis (Vercel Marketplace). Required for new signups. Nia's page works without them. `KV_REST_API_URL` / `KV_REST_API_TOKEN` are accepted as well.
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` — Upstash Redis (Vercel Marketplace). Required for new signups and for participant sign-in. Voice pages stay locked until Redis is set and the person has a password. `KV_REST_API_URL` / `KV_REST_API_TOKEN` are accepted as well.
+- `RESEND_API_KEY` and `RESEND_FROM_EMAIL` — Optional. Both must be set to email a password-reset link. `RESEND_FROM_EMAIL` is a verified sender. Without them, create a one-time link on `/admin/clients` and send it yourself. No new variable is required for accounts themselves; passwords are stored as bcrypt hashes in the same Redis.
 
 ---
 

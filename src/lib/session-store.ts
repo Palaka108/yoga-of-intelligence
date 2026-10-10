@@ -13,7 +13,8 @@ let redisClient: Redis | null | undefined;
 /**
  * Upstash Redis from the Vercel Marketplace (UPSTASH_REDIS_REST_URL / TOKEN).
  * KV_REST_API_URL / TOKEN are accepted for an older Vercel KV store.
- * Returns null when neither pair is set, so seeded pages still render.
+ * Returns null when neither pair is set. Seeded profiles still resolve,
+ * but a participant session (and therefore the voice page) needs Redis.
  */
 export function getRedis(): Redis | null {
   if (redisClient !== undefined) return redisClient;
@@ -98,6 +99,22 @@ export async function saveNewProfile(profile: ParticipantProfile): Promise<boole
   if (!redis) throw new Error('Signup store is not configured.');
   const created = await redis.hsetnx(PROFILES_KEY, profile.client_id, profile);
   return created === 1;
+}
+
+export async function deleteStoredProfile(clientId: string): Promise<void> {
+  const redis = getRedis();
+  if (!redis) return;
+  await redis.hdel(PROFILES_KEY, clientId);
+}
+
+/** No-op for seeded profiles, which are not stored in Redis. */
+export async function setStoredProfileEmail(clientId: string, email: string): Promise<void> {
+  const person = await getStoredProfile(clientId);
+  if (!person || person.email === email) return;
+  person.email = email;
+  const redis = getRedis();
+  if (!redis) return;
+  await redis.hset(PROFILES_KEY, { [person.client_id]: person });
 }
 
 /**

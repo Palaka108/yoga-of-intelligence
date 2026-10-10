@@ -15,21 +15,30 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Personal session links and the shared signup link are public.
+  // Personal session links stay outside the Supabase portal login.
+  // The voice page itself checks the participant cookie.
   if (
     pathname === '/session' ||
     pathname.startsWith('/session/') ||
     pathname === '/join' ||
     pathname.startsWith('/join/') ||
-    pathname === '/api/join'
+    pathname === '/api/join' ||
+    pathname === '/api/session' ||
+    pathname.startsWith('/api/session/')
   ) {
-    return noindex(NextResponse.next());
+    const response = noindex(NextResponse.next());
+    response.headers.set('Cache-Control', 'private, no-store');
+    response.headers.set('Referrer-Policy', 'no-referrer');
+    return response;
   }
 
   // /admin/clients is gated by SESSION_OWNER_PASSWORD, not portal login,
   // so instructor accounts never see private notes.
   if (pathname === '/admin/clients' || pathname.startsWith('/admin/clients/')) {
-    return noindex(NextResponse.next());
+    const response = noindex(NextResponse.next());
+    response.headers.set('Cache-Control', 'private, no-store');
+    response.headers.set('Referrer-Policy', 'no-referrer');
+    return response;
   }
 
   return await updateSession(request);

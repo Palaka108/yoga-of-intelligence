@@ -4,7 +4,10 @@ import 'server-only';
  * Seeded Untherapy profiles. These pages work before Redis is connected.
  *
  * Nia is the only seed. Her agent already exists, so nothing is created
- * for her at build or startup.
+ * for her at build or startup. She has no password until the owner sends
+ * a one-time link from /admin/clients. The voice widget stays hidden
+ * until that account is claimed, even though this profile still resolves
+ * when Redis is down.
  *
  * Everyone else uses /join. That flow duplicates the template agent,
  * then stores the new profile in Redis. Do not add volunteers here —
@@ -65,7 +68,7 @@ export const seededProfiles: ParticipantProfile[] = [
     start_date: '2026-10-10',
     day: 1,
     agent_id: 'agent_0601m4kwdncne98v4pmbspb6hy9v',
-    notes: 'Seeded profile. This page works before the signup store is connected.',
+    notes: 'Seeded profile. No password yet. Send a one-time link from this list so she can claim the page.',
   },
 ];
 
