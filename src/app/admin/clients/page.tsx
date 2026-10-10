@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { lockOwnerList, unlockOwnerList } from '@/app/admin/clients/actions';
+import { createParticipantInvite, lockOwnerList, unlockOwnerList } from '@/app/admin/clients/actions';
 import { hasElevenLabsKey, isSignupReady, templateAgentId } from '@/lib/elevenlabs-agent';
+import { accountSummaries, canSendResetEmail, claimUrl } from '@/lib/session-auth';
 import { isOwnerUnlocked, OWNER_COOKIE, ownerPassword } from '@/lib/session-owner-auth';
 import { listProfilesForOwner } from '@/lib/session-directory';
 import { joinCodeRequired } from '@/lib/session-join';
@@ -25,17 +26,31 @@ export const metadata: Metadata = {
     nocache: true,
     googleBot: { index: false, follow: false },
   },
+  referrer: 'no-referrer',
 };
 
 export default async function OwnerClientsPage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams: { error?: string; invite?: string; for?: string; mailed?: string };
 }) {
   const configured = Boolean(ownerPassword());
   const unlocked = isOwnerUnlocked(cookies().get(OWNER_COOKIE)?.value);
   const wrongPassword = searchParams.error === '1';
+  const inviteFailed = searchParams.error === 'invite';
   const directory = unlocked ? await listProfilesForOwner() : null;
+  const accounts =
+    directory && directory.storeConfigured
+      ? await accountSummaries(directory.profiles.map((person) => person.client_id))
+      : {};
+  const inviteToken =
+    unlocked && searchParams.invite && /^[A-Za-z0-9_-]{32,128}$/.test(searchParams.invite)
+      ? searchParams.invite
+      : null;
+  const inviteFor =
+    inviteToken && directory?.profiles.some((person) => person.client_id === searchParams.for)
+      ? searchParams.for
+      : null;
 
   return (
     <div className="relative min-h-[100svh] bg-sacred-black">
@@ -88,6 +103,35 @@ export default async function OwnerClientsPage({
                 Lock list
               </button>
             </form>
+            {inviteFailed ? (
+              <p className="rounded-2xl border border-sacred-gold/30 bg-white/5 px-4 py-3 text-sm text-sacred-gold-light">
+                Could not create a link. Check that Redis is connected, then try again.
+              </p>
+            ) : null}
+            {inviteToken && inviteFor ? (
+              <section className="rounded-3xl border border-sacred-gold/40 bg-white/5 p-5 text-sm leading-relaxed text-white/75">
+                <h2 className="font-display text-2xl font-light text-white">One-time link</h2>
+                <p className="mt-2">
+                  For <span className="font-mono text-sacred-gold">{inviteFor}</span>. It expires in 7 days,
+                  works once, and replaces any earlier link for this person. Give it to them directly.
+                </p>
+                <input
+                  readOnly
+                  value={claimUrl(inviteToken)}
+                  className="input-sacred mt-4 font-mono text-xs"
+                  aria-label="One-time link"
+                />
+                {searchParams.mailed === '1' ? (
+                  <p className="mt-3 text-white/70">A copy was sent to their email.</p>
+                ) : canSendResetEmail() ? (
+                  <p className="mt-3 text-white/50">Email was not sent. Share the link yourself.</p>
+                ) : (
+                  <p className="mt-3 text-white/50">
+                    Email is not configured, so this link is the way to set or reset a password.
+                  </p>
+                )}
+              </section>
+            ) : null}
             <section className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm leading-relaxed text-white/70">
               <p>
                 Shared signup link:{' '}
@@ -98,7 +142,9 @@ export default async function OwnerClientsPage({
               <p className="mt-2">
                 New pages copy agent{' '}
                 <span className="break-all font-mono text-xs text-white/80">{templateAgentId()}</span>.
-                {joinCodeRequired() ? ' A join code is required.' : ' No join code is set.'}
+                {joinCodeRequired() ? ' A join code is required.' : ' No join code is set.'} A voice page
+                opens only for the person signed in to it. Use a one-time link when someone has no
+                password yet, including Nia.
               </p>
               {!isSignupReady() ? (
                 <p className="mt-2 text-sacred-gold-light">
@@ -106,7 +152,8 @@ export default async function OwnerClientsPage({
                   {!isStoreConfigured()
                     ? ' Connect Upstash Redis (UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN).'
                     : ''}
-                  {!hasElevenLabsKey() ? ' Set ELEVENLABS_API_KEY.' : ''} Nia still works from the seed.
+                  {!hasElevenLabsKey() ? ' Set ELEVENLABS_API_KEY.' : ''} Voice pages stay locked until each
+                  person has a password. Nia claims hers from a one-time link once Redis is connected.
                 </p>
               ) : null}
               {directory?.storeError ? (
@@ -119,6 +166,9 @@ export default async function OwnerClientsPage({
               const program = programInfo(person.program);
               const path = sessionPath(person.client_id);
               const url = sessionUrl(person.client_id);
+              const account = accounts[person.client_id.toLowerCase()];
+              const email = account?.email || person.email;
+              const hasPassword = Boolean(account?.hasPassword);
               return (
                 <article
                   key={person.client_id}
@@ -165,12 +215,23 @@ export default async function OwnerClientsPage({
                         </dd>
                       </div>
                     ) : null}
-                    {person.email ? (
+                    <div>
+                      <dt className="text-white/40">Account</dt>
+                      <dd className="text-white/85">
+                        {hasPassword ? 'Password set' : 'No password yet'}
+                      </dd>
+                    </div>
+                    {email ? (
                       <div>
                         <dt className="text-white/40">Email</dt>
-                        <dd className="break-all text-white/75">{person.email}</dd>
+                        <dd className="break-all text-white/75">{email}</dd>
                       </div>
-                    ) : null}
+                    ) : (
+                      <div>
+                        <dt className="text-white/40">Email</dt>
+                        <dd className="text-white/50">None yet. The one-time link will ask for one.</dd>
+                      </div>
+                    )}
                     <div>
                       <dt className="text-white/40">Private notes</dt>
                       <dd className="whitespace-pre-wrap text-white/75">
@@ -178,6 +239,16 @@ export default async function OwnerClientsPage({
                       </dd>
                     </div>
                   </dl>
+                  {directory?.storeConfigured && !directory.storeError ? (
+                    <form action={createParticipantInvite} className="mt-5">
+                      <input type="hidden" name="client_id" value={person.client_id} />
+                      <button type="submit" className="btn-glass w-full text-sm">
+                        {hasPassword ? 'Create a reset link' : 'Create a one-time link'}
+                      </button>
+                    </form>
+                  ) : (
+                    <p className="mt-4 text-sm text-white/45">Connect Redis before sending a link.</p>
+                  )}
                 </article>
               );
             })}

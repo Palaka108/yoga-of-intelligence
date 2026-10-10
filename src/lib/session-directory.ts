@@ -8,7 +8,7 @@ import {
 } from '@/lib/session-participants';
 import { getStoredProfile, isStoreConfigured, listStoredProfiles } from '@/lib/session-store';
 
-/** Seed first, then Redis. Nia resolves even when the store is unset or down. */
+/** Seed first, then Redis. Nia resolves even when the store is unset or down. The voice page still requires her own login. */
 export async function resolveParticipant(
   raw: string | null | undefined
 ): Promise<PublicParticipant | null> {

@@ -1,26 +1,27 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import {
+  PARTICIPANT_COOKIE,
+  PARTICIPANT_SESSION_SECONDS,
+  clientIpFrom,
+  participantCookieOptions,
+} from '@/lib/session-auth';
 import { signupFromForm } from '@/lib/session-join';
 import { sessionPath } from '@/lib/session-participants';
 
 export const dynamic = 'force-dynamic';
 
-function clientIp(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim();
-    if (first) return first;
-  }
-  const realIp = request.headers.get('x-real-ip')?.trim();
-  if (realIp) return realIp;
-  return request.ip || 'unknown';
-}
-
 export async function POST(request: NextRequest) {
   const form = await request.formData();
-  const result = await signupFromForm(form, clientIp(request));
+  const result = await signupFromForm(form, clientIpFrom(request.headers, request.ip));
 
   if (result.ok) {
-    return NextResponse.redirect(new URL(sessionPath(result.clientId), request.url), 303);
+    const response = NextResponse.redirect(new URL(sessionPath(result.clientId), request.url), 303);
+    response.cookies.set(
+      PARTICIPANT_COOKIE,
+      result.sessionToken,
+      participantCookieOptions(PARTICIPANT_SESSION_SECONDS)
+    );
+    return response;
   }
 
   const back = new URL('/join', request.url);

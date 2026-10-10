@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import SessionScreen from '@/components/session/SessionScreen';
-import { resolveParticipant } from '@/lib/session-directory';
+import { sessionAccess } from '@/lib/session-access';
 import { firstQueryValue } from '@/lib/session-participants';
 
 export const dynamic = 'force-dynamic';
@@ -8,14 +8,14 @@ export const dynamic = 'force-dynamic';
 type Search = { c?: string | string[] };
 
 export async function generateMetadata({ searchParams }: { searchParams: Search }): Promise<Metadata> {
-  const person = await resolveParticipant(firstQueryValue(searchParams.c));
+  const access = await sessionAccess(firstQueryValue(searchParams.c));
   return {
-    title: person ? `${person.name} — Untherapy` : 'Your link — Yoga of Intelligence',
+    title: access.mode === 'open' ? `${access.person.name} — Untherapy` : 'Untherapy — 5-Day Reflection',
     robots: { index: false, follow: false },
   };
 }
 
 export default async function SessionQueryPage({ searchParams }: { searchParams: Search }) {
-  const person = await resolveParticipant(firstQueryValue(searchParams.c));
-  return <SessionScreen person={person} />;
+  const access = await sessionAccess(firstQueryValue(searchParams.c));
+  return <SessionScreen access={access} />;
 }

@@ -3,11 +3,21 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import {
+  canSendResetEmail,
+  claimUrl,
+  createInvite,
+  getAuth,
+  sendResetEmail,
+} from '@/lib/session-auth';
+import {
   OWNER_COOKIE,
   createOwnerToken,
+  isOwnerUnlocked,
   ownerPassword,
   passwordsMatch,
 } from '@/lib/session-owner-auth';
+import { findSeed } from '@/lib/session-participants';
+import { getStoredProfile, isStoreConfigured } from '@/lib/session-store';
 
 function cookieOptions(maxAge: number) {
   return {
@@ -34,4 +44,41 @@ export async function unlockOwnerList(formData: FormData) {
 export async function lockOwnerList() {
   cookies().set(OWNER_COOKIE, '', cookieOptions(0));
   redirect('/admin/clients');
+}
+
+export async function createParticipantInvite(formData: FormData) {
+  if (!isOwnerUnlocked(cookies().get(OWNER_COOKIE)?.value)) {
+    redirect('/admin/clients');
+  }
+  if (!isStoreConfigured()) {
+    redirect('/admin/clients?error=invite');
+  }
+
+  const requested = String(formData.get('client_id') ?? '').trim();
+  const seeded = findSeed(requested);
+  const stored = seeded ? null : await getStoredProfile(requested.toLowerCase());
+  const person = seeded ?? stored;
+  if (!person || person.client_id.toLowerCase() !== requested.toLowerCase()) {
+    redirect('/admin/clients?error=invite');
+  }
+
+  let token = '';
+  try {
+    token = await createInvite(person.client_id);
+  } catch (error) {
+    console.error('Invite failed', error instanceof Error ? error.name : 'unknown');
+    redirect('/admin/clients?error=invite');
+  }
+
+  const auth = await getAuth(person.client_id);
+  const email = auth?.email || person.email?.trim().toLowerCase();
+  let mailed = '0';
+  if (email && canSendResetEmail()) {
+    const sent = await sendResetEmail(email, claimUrl(token));
+    mailed = sent ? '1' : '0';
+  }
+
+  redirect(
+    `/admin/clients?invite=${encodeURIComponent(token)}&for=${encodeURIComponent(person.client_id)}&mailed=${mailed}`
+  );
 }
