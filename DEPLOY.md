@@ -21,6 +21,11 @@ Required variables:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon/public key
 - `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key (server-side only)
 - `NEXT_PUBLIC_SITE_URL` — Your deployment URL
+- `SESSION_OWNER_PASSWORD` — Password for the unlinked participant list at `/admin/clients`. Leave unset to keep that page locked. Server-only; do not prefix with `NEXT_PUBLIC_`.
+- `ELEVENLABS_API_KEY` — Server-only key used when someone signs up at `/join`. Do not prefix with `NEXT_PUBLIC_`.
+- `TEMPLATE_AGENT_ID` — Optional. Agent duplicated for each new signup. Defaults to `agent_2901m4hrxsemfj0thpsyxfqxr54f`.
+- `JOIN_CODE` — Optional. When set, `/join` requires this code.
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` — Upstash Redis (Vercel Marketplace). Required for new signups. Nia's page works without them. `KV_REST_API_URL` / `KV_REST_API_TOKEN` are accepted as well.
 
 ---
 
