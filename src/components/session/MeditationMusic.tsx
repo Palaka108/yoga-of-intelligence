@@ -115,20 +115,21 @@ export default function MeditationMusic() {
   return (
     <section
       aria-label="Meditation music"
-      className="pointer-events-auto fixed inset-x-0 bottom-0 z-30 px-3 pb-[max(0.65rem,env(safe-area-inset-bottom))]"
+      className="pointer-events-auto fixed inset-x-0 bottom-0 z-30 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
     >
-      <div className="mx-auto flex w-full max-w-md items-center gap-3 rounded-2xl border border-white/15 bg-slate-950/55 px-3 py-2.5 shadow-2xl backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-md items-center gap-3.5 rounded-3xl border border-sacred-gold/60 bg-slate-950/80 px-3.5 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.5),0_0_28px_rgba(201,168,76,0.22)] backdrop-blur-xl">
         <button
           type="button"
           onClick={toggle}
           aria-label={playing ? 'Pause meditation music' : 'Play meditation music'}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-sacred-gold/40 bg-white/10 text-sacred-gold transition hover:bg-white/15 active:scale-95"
+          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-sacred-gold bg-sacred-gold/20 text-sacred-gold-light transition hover:bg-sacred-gold/30 active:scale-95 ${playing ? '' : 'session-music-invite'}`}
         >
-          {playing ? <Pause className="h-5 w-5" aria-hidden /> : <Play className="ml-0.5 h-5 w-5" aria-hidden />}
+          {playing ? <Pause className="h-6 w-6" aria-hidden /> : <Play className="ml-0.5 h-7 w-7" aria-hidden />}
         </button>
         <div className="min-w-0 flex-1">
-          <p className="font-display text-sm leading-snug text-white/85">Meditation music · So Many Forms (instrumental)</p>
-          <label className="mt-1.5 flex items-center gap-2">
+          <p className="font-display text-base leading-snug text-white">Meditation music · So Many Forms (instrumental)</p>
+          <p className="mt-0.5 text-xs tracking-wide text-sacred-gold-light">Start the music here.</p>
+          <label className="mt-2 flex items-center gap-2">
             <span className="sr-only">Volume</span>
             <input
               type="range"
@@ -138,7 +139,7 @@ export default function MeditationMusic() {
               value={volume}
               aria-label="Volume"
               onChange={(event) => onVolume(Number(event.target.value))}
-              className="h-1 w-full cursor-pointer accent-sacred-gold"
+              className="h-1.5 w-full cursor-pointer accent-sacred-gold"
             />
           </label>
         </div>

@@ -134,7 +134,6 @@ async function listAgentConversations(agentId: string): Promise<ConversationSign
     const url = new URL('https://api.elevenlabs.io/v1/convai/conversations');
     url.searchParams.set('agent_id', agentId);
     url.searchParams.set('page_size', '100');
-    url.searchParams.append('data_collection_ids', 'session_number');
     if (cursor) url.searchParams.set('cursor', cursor);
 
     const response = await fetch(url, {
@@ -155,8 +154,7 @@ async function listAgentConversations(agentId: string): Promise<ConversationSign
   }
 
   const needsDetail = summaries
-    .filter((item) => item.status === 'done' && readSummaryNumber(item) == null)
-    .sort((a, b) => (b.start_time_unix_secs ?? 0) - (a.start_time_unix_secs ?? 0))
+    .filter((item) => item.status === 'done' && (item.call_duration_secs == null || item.start_time_unix_secs == null))
     .slice(0, 12);
 
   const details = await Promise.all(needsDetail.map((item) => fetchDetail(item.conversation_id, apiKey)));
@@ -167,18 +165,7 @@ async function listAgentConversations(agentId: string): Promise<ConversationSign
 
 type Summary = ConversationSignal & {
   conversation_id?: string;
-  start_time_unix_secs?: number;
 };
-
-function readSummaryNumber(item: Summary): number | null {
-  const raw = item.data_collection_results?.session_number;
-  if (raw == null) return null;
-  if (typeof raw === 'object' && raw && 'value' in raw) {
-    const value = (raw as { value?: unknown }).value;
-    return typeof value === 'number' || typeof value === 'string' ? Number(value) || null : null;
-  }
-  return typeof raw === 'number' || typeof raw === 'string' ? Number(raw) || null : null;
-}
 
 async function fetchDetail(conversationId: string | undefined, apiKey: string): Promise<Summary | null> {
   if (!conversationId) return null;
@@ -193,14 +180,13 @@ async function fetchDetail(conversationId: string | undefined, apiKey: string): 
     );
     if (!response.ok) return null;
     const body = (await response.json()) as Summary & {
-      metadata?: { call_duration_secs?: number };
-      analysis?: ConversationSignal['analysis'];
+      metadata?: { call_duration_secs?: number; start_time_unix_secs?: number };
     };
     return {
       ...body,
       conversation_id: conversationId,
       call_duration_secs: body.call_duration_secs ?? body.metadata?.call_duration_secs,
-      data_collection_results: body.data_collection_results ?? body.analysis?.data_collection_results,
+      start_time_unix_secs: body.start_time_unix_secs ?? body.metadata?.start_time_unix_secs,
     };
   } catch (error) {
     console.error('Conversation detail failed', error instanceof Error ? error.name : 'unknown');
