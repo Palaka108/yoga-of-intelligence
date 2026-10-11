@@ -44,6 +44,10 @@ export default function VoiceWidget({ agentId, clientId, clientName }: VoiceWidg
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // React leaves className as an attribute on this custom element, so the
+    // class that lifts the sheet has to be set on the DOM node itself.
+    el.setAttribute('class', 'session-voice');
+    el.style.setProperty('bottom', 'calc(12.25rem + env(safe-area-inset-bottom, 0px))', 'important');
     // Set attributes in the DOM so a new profile always replaces the previous
     // agent, even when React leaves a custom element in place.
     el.setAttribute('agent-id', agentId);
