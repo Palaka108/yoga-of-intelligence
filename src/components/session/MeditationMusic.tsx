@@ -3,7 +3,7 @@
 import { Pause, Play } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-const TRACK_SRC = '/music/so-many-forms.mp3';
+const TRACK_SRC = '/music/so-many-forms-instrumental.mp3';
 const DEFAULT_VOLUME = 0.25;
 const FADE_MS = 2000;
 
@@ -127,7 +127,7 @@ export default function MeditationMusic() {
           {playing ? <Pause className="h-5 w-5" aria-hidden /> : <Play className="ml-0.5 h-5 w-5" aria-hidden />}
         </button>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-display text-sm text-white/85">Meditation music · So Many Forms</p>
+          <p className="font-display text-sm leading-snug text-white/85">Meditation music · So Many Forms (instrumental)</p>
           <label className="mt-1.5 flex items-center gap-2">
             <span className="sr-only">Volume</span>
             <input
