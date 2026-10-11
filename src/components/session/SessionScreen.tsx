@@ -16,7 +16,7 @@ function Backdrop({ children, roomForWidget }: { children: React.ReactNode; room
       <div className="absolute inset-0 bg-gradient-to-b from-rose-900/35 via-pink-900/30 to-slate-950/80" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(168,130,214,0.14)_0%,transparent_68%)]" />
       <div
-        className={`relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-5 py-10 ${roomForWidget ? 'pb-64 pt-8' : ''}`}
+        className={`relative z-10 flex min-h-[100svh] flex-col items-center px-5 ${roomForWidget ? 'justify-start pb-72 pt-8' : 'justify-center py-10'}`}
       >
         {children}
       </div>
