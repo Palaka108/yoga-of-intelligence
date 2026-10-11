@@ -56,8 +56,6 @@ export async function resolveSessionDay(person: DayPerson): Promise<ResolvedDay>
 
 export async function saveDayOverride(clientId: string, value: DayOverride): Promise<void> {
   await setDayOverride(clientId, value);
-  const day = value === 'complete' ? PROGRAM_DAYS : value;
-  await rememberStoredDay(clientId, day);
 }
 
 export async function resetDayOverride(clientId: string, agentId = ''): Promise<void> {
