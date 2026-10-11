@@ -34,12 +34,13 @@ type VoiceWidgetProps = {
   agentId: string;
   clientId: string;
   clientName: string;
+  sessionNumber: string;
 };
 
-export default function VoiceWidget({ agentId, clientId, clientName }: VoiceWidgetProps) {
+export default function VoiceWidget({ agentId, clientId, clientName, sessionNumber }: VoiceWidgetProps) {
   const ref = useRef<HTMLElement>(null);
-  // Slug in client_id, display name in client_name. Never the other way around.
-  const dynamicVariables = JSON.stringify(sessionDynamicVariables(clientId, clientName));
+  // Slug in client_id, display name in client_name, day in session_number.
+  const dynamicVariables = JSON.stringify(sessionDynamicVariables(clientId, clientName, sessionNumber));
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -63,7 +64,7 @@ export default function VoiceWidget({ agentId, clientId, clientName }: VoiceWidg
     <>
       <Script src={WIDGET_SRC} strategy="afterInteractive" />
       <elevenlabs-convai
-        key={`${clientId}:${agentId}`}
+        key={`${clientId}:${agentId}:${sessionNumber}`}
         ref={ref}
         className="session-voice"
         agent-id={agentId}

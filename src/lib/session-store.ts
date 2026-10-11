@@ -5,6 +5,10 @@ import { type ParticipantProfile } from '@/lib/session-participants';
 
 /** One hash of every signup. Seeds are not written here. */
 const PROFILES_KEY = 'yoi:session:profiles';
+/** Owner-chosen day, including for seeded profiles that are not in the profile hash. */
+const DAY_OVERRIDE_KEY = 'yoi:session:day-overrides';
+
+export type DayOverride = number | 'complete';
 const JOIN_LIMIT = 8;
 const JOIN_WINDOW_SECONDS = 60 * 60;
 
@@ -105,6 +109,51 @@ export async function deleteStoredProfile(clientId: string): Promise<void> {
   const redis = getRedis();
   if (!redis) return;
   await redis.hdel(PROFILES_KEY, clientId);
+}
+
+export async function getDayOverride(clientId: string): Promise<DayOverride | null> {
+  const redis = getRedis();
+  if (!redis) return null;
+  const value = await redis.hget<unknown>(DAY_OVERRIDE_KEY, clientId.toLowerCase());
+  return parseDayOverride(value);
+}
+
+export async function setDayOverride(clientId: string, value: DayOverride): Promise<void> {
+  const redis = getRedis();
+  if (!redis) throw new Error('Signup store is not configured.');
+  await redis.hset(DAY_OVERRIDE_KEY, { [clientId.toLowerCase()]: { day: value } });
+}
+
+export async function clearDayOverride(clientId: string): Promise<void> {
+  const redis = getRedis();
+  if (!redis) throw new Error('Signup store is not configured.');
+  await redis.hdel(DAY_OVERRIDE_KEY, clientId.toLowerCase());
+}
+
+/** Keeps the fallback day current after a successful lookup. Seeds are not stored. */
+export async function rememberStoredDay(clientId: string, day: number): Promise<void> {
+  const person = await getStoredProfile(clientId);
+  if (!person || person.day === day) return;
+  person.day = day;
+  const redis = getRedis();
+  if (!redis) return;
+  await redis.hset(PROFILES_KEY, { [person.client_id]: person });
+}
+
+function parseDayOverride(value: unknown): DayOverride | null {
+  let record = value;
+  if (typeof record === 'string') {
+    try {
+      record = JSON.parse(record);
+    } catch {
+      return null;
+    }
+  }
+  if (!record || typeof record !== 'object' || !('day' in record)) return null;
+  const day = (record as { day?: unknown }).day;
+  if (day === 'complete') return 'complete';
+  if (typeof day === 'number' && Number.isInteger(day) && day >= 1 && day <= 5) return day;
+  return null;
 }
 
 /** No-op for seeded profiles, which are not stored in Redis. */

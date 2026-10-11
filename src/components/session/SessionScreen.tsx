@@ -1,5 +1,6 @@
 import MeditationMusic from '@/components/session/MeditationMusic';
 import VoiceWidget from '@/components/session/VoiceWidget';
+import { resolveSessionDay, type ResolvedDay } from '@/lib/session-progress';
 import { dayLabel, programInfo } from '@/lib/session-participants';
 import type { SessionAccess } from '@/lib/session-access';
 
@@ -50,10 +51,31 @@ function SignOut() {
   );
 }
 
-export default function SessionScreen({ access }: { access: SessionAccess }) {
+function DayDots({ progress }: { progress: ResolvedDay }) {
+  return (
+    <div className="mt-4 flex items-center justify-center gap-2" aria-hidden>
+      {Array.from({ length: progress.total }, (_, index) => {
+        const day = index + 1;
+        const filled = progress.finished || day <= progress.completed;
+        const current = !progress.finished && day === progress.day;
+        return (
+          <span
+            key={day}
+            className={`h-2.5 w-2.5 rounded-full ${
+              filled ? 'bg-sacred-gold' : current ? 'bg-transparent ring-2 ring-sacred-gold' : 'bg-white/20'
+            }`}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+export default async function SessionScreen({ access }: { access: SessionAccess }) {
   if (access.mode === 'open') {
     const person = access.person;
     const program = programInfo(person.program);
+    const progress = await resolveSessionDay(person);
     return (
       <Backdrop roomForWidget>
         <Card>
@@ -65,15 +87,21 @@ export default function SessionScreen({ access }: { access: SessionAccess }) {
             {program.title}
           </h2>
           <p className="mt-4 font-display text-sm uppercase tracking-[0.22em] text-sacred-gold">
-            {dayLabel(person.program, person.day)}
+            {progress.finished ? "You've completed the 5 days." : dayLabel(person.program, progress.day)}
           </p>
+          <DayDots progress={progress} />
           <div className="mx-auto my-6 h-px w-24 bg-gradient-to-r from-transparent via-sacred-gold/50 to-transparent" />
           <p className="text-base leading-relaxed text-white/75">
             Find a quiet spot, tap to begin, and talk as you would with a friend.
           </p>
           <SignOut />
         </Card>
-        <VoiceWidget agentId={person.agent_id} clientId={person.client_id} clientName={person.name} />
+        <VoiceWidget
+          agentId={person.agent_id}
+          clientId={person.client_id}
+          clientName={person.name}
+          sessionNumber={progress.sessionNumber}
+        />
         <MeditationMusic />
       </Backdrop>
     );
