@@ -472,6 +472,12 @@
   animation-delay: 6s;
 }
 
+/* Keep the voice sheet just above the meditation player. The host is
+   position:fixed; inset:0 inside its shadow root; only the bottom edge moves. */
+elevenlabs-convai.session-voice {
+  bottom: calc(12.25rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
 @keyframes orbFloat {
   0%, 100% {
     opacity: 0.3;

@@ -2,6 +2,7 @@
 
 import Script from 'next/script';
 import { useLayoutEffect, useRef } from 'react';
+import { sessionDynamicVariables } from '@/lib/session-voice';
 
 const WIDGET_SRC = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
 
@@ -37,10 +38,8 @@ type VoiceWidgetProps = {
 
 export default function VoiceWidget({ agentId, clientId, clientName }: VoiceWidgetProps) {
   const ref = useRef<HTMLElement>(null);
-  const dynamicVariables = JSON.stringify({
-    client_id: clientId,
-    client_name: clientName,
-  });
+  // Slug in client_id, display name in client_name. Never the other way around.
+  const dynamicVariables = JSON.stringify(sessionDynamicVariables(clientId, clientName));
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -62,6 +61,7 @@ export default function VoiceWidget({ agentId, clientId, clientName }: VoiceWidg
       <elevenlabs-convai
         key={`${clientId}:${agentId}`}
         ref={ref}
+        className="session-voice"
         agent-id={agentId}
         dynamic-variables={dynamicVariables}
         variant="full"
