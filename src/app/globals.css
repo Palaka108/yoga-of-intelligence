@@ -11,6 +11,7 @@
     --sacred-gold-light: #e8d48b;
     --sacred-neon: #00d4ff;
     --sacred-violet: #7c3aed;
+    --session-music-offset: calc(7rem + env(safe-area-inset-bottom, 0px));
   }
 
   * {
@@ -475,7 +476,7 @@
 /* Keep the voice sheet just above the meditation player. The host is
    position:fixed; inset:0 inside its shadow root; only the bottom edge moves. */
 elevenlabs-convai.session-voice {
-  bottom: calc(12.25rem + env(safe-area-inset-bottom, 0px)) !important;
+  bottom: var(--session-music-offset) !important;
 }
 
 @keyframes orbFloat {
