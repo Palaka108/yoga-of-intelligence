@@ -1,10 +1,17 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { createParticipantInvite, lockOwnerList, unlockOwnerList } from '@/app/admin/clients/actions';
+import {
+  createParticipantInvite,
+  lockOwnerList,
+  resetParticipantDay,
+  setParticipantDay,
+  unlockOwnerList,
+} from '@/app/admin/clients/actions';
 import { hasElevenLabsKey, isSignupReady, templateAgentId } from '@/lib/elevenlabs-agent';
 import { accountSummaries, canSendResetEmail, claimUrl } from '@/lib/session-auth';
 import { isOwnerUnlocked, OWNER_COOKIE, ownerPassword } from '@/lib/session-owner-auth';
 import { listProfilesForOwner } from '@/lib/session-directory';
+import { resolveSessionDay, type ResolvedDay } from '@/lib/session-progress';
 import { joinCodeRequired } from '@/lib/session-join';
 import {
   dayLabel,
@@ -38,7 +45,16 @@ export default async function OwnerClientsPage({
   const unlocked = isOwnerUnlocked(cookies().get(OWNER_COOKIE)?.value);
   const wrongPassword = searchParams.error === '1';
   const inviteFailed = searchParams.error === 'invite';
+  const dayFailed = searchParams.error === 'day';
   const directory = unlocked ? await listProfilesForOwner() : null;
+  const days: Record<string, ResolvedDay> = {};
+  if (directory) {
+    await Promise.all(
+      directory.profiles.map(async (person) => {
+        days[person.client_id] = await resolveSessionDay(person);
+      })
+    );
+  }
   const accounts =
     directory && directory.storeConfigured
       ? await accountSummaries(directory.profiles.map((person) => person.client_id))
@@ -103,6 +119,11 @@ export default async function OwnerClientsPage({
                 Lock list
               </button>
             </form>
+            {dayFailed ? (
+              <p className="rounded-2xl border border-sacred-gold/30 bg-white/5 px-4 py-3 text-sm text-sacred-gold-light">
+                Could not save that day. Check that Redis is connected, then try again.
+              </p>
+            ) : null}
             {inviteFailed ? (
               <p className="rounded-2xl border border-sacred-gold/30 bg-white/5 px-4 py-3 text-sm text-sacred-gold-light">
                 Could not create a link. Check that Redis is connected, then try again.
@@ -169,6 +190,12 @@ export default async function OwnerClientsPage({
               const account = accounts[person.client_id.toLowerCase()];
               const email = account?.email || person.email;
               const hasPassword = Boolean(account?.hasPassword);
+              const progress = days[person.client_id];
+              const daySource = progress?.source === 'override'
+                ? 'Set on this page'
+                : progress?.source === 'automatic'
+                  ? 'From completed sessions'
+                  : 'Saved day';
               return (
                 <article
                   key={person.client_id}
@@ -187,7 +214,12 @@ export default async function OwnerClientsPage({
                     <div>
                       <dt className="text-white/40">Day</dt>
                       <dd className="text-white/85">
-                        {dayLabel(person.program, person.day)} · started{' '}
+                        {progress?.finished
+                          ? "You've completed the 5 days."
+                          : dayLabel(person.program, progress?.day ?? person.day)}
+                        {' · '}
+                        {daySource}
+                        {' · started '}
                         {formatSessionDate(person.start_date)}
                       </dd>
                     </div>
@@ -240,12 +272,42 @@ export default async function OwnerClientsPage({
                     </div>
                   </dl>
                   {directory?.storeConfigured && !directory.storeError ? (
-                    <form action={createParticipantInvite} className="mt-5">
-                      <input type="hidden" name="client_id" value={person.client_id} />
-                      <button type="submit" className="btn-glass w-full text-sm">
-                        {hasPassword ? 'Create a reset link' : 'Create a one-time link'}
-                      </button>
-                    </form>
+                    <div className="mt-5 space-y-2">
+                      <form action={setParticipantDay} className="flex items-center gap-2">
+                        <input type="hidden" name="client_id" value={person.client_id} />
+                        <label className="sr-only" htmlFor={`day-${person.client_id}`}>
+                          Set day for {person.name}
+                        </label>
+                        <select
+                          id={`day-${person.client_id}`}
+                          name="day"
+                          defaultValue={progress?.finished ? 'complete' : String(progress?.day ?? person.day)}
+                          className="input-sacred"
+                        >
+                          <option value="1">Day 1</option>
+                          <option value="2">Day 2</option>
+                          <option value="3">Day 3</option>
+                          <option value="4">Day 4</option>
+                          <option value="5">Day 5</option>
+                          <option value="complete">Completed</option>
+                        </select>
+                        <button type="submit" className="btn-glass shrink-0 px-4 text-sm">
+                          Set day
+                        </button>
+                      </form>
+                      <form action={resetParticipantDay}>
+                        <input type="hidden" name="client_id" value={person.client_id} />
+                        <button type="submit" className="btn-glass w-full text-sm">
+                          Reset to automatic
+                        </button>
+                      </form>
+                      <form action={createParticipantInvite}>
+                        <input type="hidden" name="client_id" value={person.client_id} />
+                        <button type="submit" className="btn-glass w-full text-sm">
+                          {hasPassword ? 'Create a reset link' : 'Create a one-time link'}
+                        </button>
+                      </form>
+                    </div>
                   ) : (
                     <p className="mt-4 text-sm text-white/45">Connect Redis before sending a link.</p>
                   )}

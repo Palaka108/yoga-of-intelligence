@@ -17,7 +17,8 @@ import {
   passwordsMatch,
 } from '@/lib/session-owner-auth';
 import { findSeed } from '@/lib/session-participants';
-import { getStoredProfile, isStoreConfigured } from '@/lib/session-store';
+import { resetDayOverride, saveDayOverride } from '@/lib/session-progress';
+import { getStoredProfile, isStoreConfigured, type DayOverride } from '@/lib/session-store';
 
 function cookieOptions(maxAge: number) {
   return {
@@ -81,4 +82,48 @@ export async function createParticipantInvite(formData: FormData) {
   redirect(
     `/admin/clients?invite=${encodeURIComponent(token)}&for=${encodeURIComponent(person.client_id)}&mailed=${mailed}`
   );
+}
+
+async function ownerPerson(formData: FormData) {
+  if (!isOwnerUnlocked(cookies().get(OWNER_COOKIE)?.value)) return null;
+  if (!isStoreConfigured()) return null;
+  const requested = String(formData.get('client_id') ?? '').trim();
+  const seeded = findSeed(requested);
+  const stored = seeded ? null : await getStoredProfile(requested.toLowerCase());
+  const person = seeded ?? stored;
+  if (!person || person.client_id.toLowerCase() !== requested.toLowerCase()) return null;
+  return person;
+}
+
+export async function setParticipantDay(formData: FormData) {
+  const person = await ownerPerson(formData);
+  if (!person) redirect('/admin/clients?error=day');
+
+  const raw = String(formData.get('day') ?? '').trim();
+  const value: DayOverride | null = raw === 'complete'
+    ? 'complete'
+    : /^[1-5]$/.test(raw)
+      ? Number(raw)
+      : null;
+  if (!value) redirect('/admin/clients?error=day');
+
+  try {
+    await saveDayOverride(person.client_id, value);
+  } catch (error) {
+    console.error('Day override failed', error instanceof Error ? error.name : 'unknown');
+    redirect('/admin/clients?error=day');
+  }
+  redirect('/admin/clients');
+}
+
+export async function resetParticipantDay(formData: FormData) {
+  const person = await ownerPerson(formData);
+  if (!person) redirect('/admin/clients?error=day');
+  try {
+    await resetDayOverride(person.client_id, person.agent_id);
+  } catch (error) {
+    console.error('Day reset failed', error instanceof Error ? error.name : 'unknown');
+    redirect('/admin/clients?error=day');
+  }
+  redirect('/admin/clients');
 }

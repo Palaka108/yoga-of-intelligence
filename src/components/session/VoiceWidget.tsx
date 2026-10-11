@@ -2,6 +2,7 @@
 
 import Script from 'next/script';
 import { useLayoutEffect, useRef } from 'react';
+import { sessionDynamicVariables } from '@/lib/session-voice';
 
 const WIDGET_SRC = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
 
@@ -33,18 +34,21 @@ type VoiceWidgetProps = {
   agentId: string;
   clientId: string;
   clientName: string;
+  sessionNumber: string;
 };
 
-export default function VoiceWidget({ agentId, clientId, clientName }: VoiceWidgetProps) {
+export default function VoiceWidget({ agentId, clientId, clientName, sessionNumber }: VoiceWidgetProps) {
   const ref = useRef<HTMLElement>(null);
-  const dynamicVariables = JSON.stringify({
-    client_id: clientId,
-    client_name: clientName,
-  });
+  // Slug in client_id, display name in client_name, day in session_number.
+  const dynamicVariables = JSON.stringify(sessionDynamicVariables(clientId, clientName, sessionNumber));
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // React leaves className as an attribute on this custom element, so the
+    // class that lifts the sheet has to be set on the DOM node itself.
+    el.setAttribute('class', 'session-voice');
+    el.style.setProperty('bottom', 'var(--session-music-offset)', 'important');
     // Set attributes in the DOM so a new profile always replaces the previous
     // agent, even when React leaves a custom element in place.
     el.setAttribute('agent-id', agentId);
@@ -60,8 +64,9 @@ export default function VoiceWidget({ agentId, clientId, clientName }: VoiceWidg
     <>
       <Script src={WIDGET_SRC} strategy="afterInteractive" />
       <elevenlabs-convai
-        key={`${clientId}:${agentId}`}
+        key={`${clientId}:${agentId}:${sessionNumber}`}
         ref={ref}
+        className="session-voice"
         agent-id={agentId}
         dynamic-variables={dynamicVariables}
         variant="full"
