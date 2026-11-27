@@ -15,8 +15,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Personal session links stay outside the Supabase portal login.
-  // The voice page itself checks the participant cookie.
+  // Personal session links and the weekly listening path stay outside the
+  // Supabase portal login. The voice page checks its own participant cookie.
+  // /listen/<client> is an unlisted link and does not use that login.
   if (
     pathname === '/session' ||
     pathname.startsWith('/session/') ||
@@ -24,7 +25,11 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/join/') ||
     pathname === '/api/join' ||
     pathname === '/api/session' ||
-    pathname.startsWith('/api/session/')
+    pathname.startsWith('/api/session/') ||
+    pathname === '/listen' ||
+    pathname.startsWith('/listen/') ||
+    pathname === '/api/listen' ||
+    pathname.startsWith('/api/listen/')
   ) {
     const response = noindex(NextResponse.next());
     response.headers.set('Cache-Control', 'private, no-store');

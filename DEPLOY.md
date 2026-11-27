@@ -310,3 +310,35 @@ count.
 The same `event_id` is used for the Meta `Lead` event and stored on the row in
 `yoi_rsvps.meta_event_id`, so one registration can be reconciled across Google,
 Meta and the database.
+
+---
+
+## 12. Weekly listening path — `/listen/<client>`
+
+One song for the week, seven daily questions. The question is not in the page
+until the song has actually finished playing. Seeking to the end does not open
+it. Answers are spoken (MediaRecorder) or typed.
+
+People and songs live in `src/lib/listen-weeks.ts`. Copy the demo entry. The
+link is `/listen/<clientId>`. Set `calendar: true` and a `startDate` so day 1
+is that date in `timeZone`. Put seven questions in order. Point `songUrl` at
+an https file or a file in `public/listen/`. Change `week.id` when the song
+changes so earlier notes stay filed under the old week.
+
+`/listen/demo` is a public test page. The song is a 12-second original tone,
+not a Suno track. `/listen/demo?day=3` opens day 3 without waiting on the
+calendar.
+
+Notes are stored in the same Upstash Redis as the session pages
+(`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`). No new database and
+no new secret. Without Redis, production cannot keep notes. Local development
+writes them to `.data/listen` instead.
+
+Voice notes are transcribed with the existing `ELEVENLABS_API_KEY` (Scribe,
+`scribe_v3`). If the key is missing or Scribe fails, the audio is still saved
+and the review page says the words are not written yet.
+
+Palaka reads notes at `/admin/clients/listening`, with the same owner password
+as `/admin/clients`. Nothing new has to be purchased. Replace the demo song
+with the Suno file when a real week starts, and add that person to
+`listen-weeks.ts`.

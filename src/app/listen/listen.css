@@ -1,0 +1,423 @@
+/* Morning Paper. Scoped to the listening path so the rest of the site is unchanged. */
+
+html:has(.listen-root),
+html:has(.listen-root) body {
+  background: #f3eee4;
+  color: #3c332b;
+}
+
+.listen-root {
+  --ink: #3c332b;
+  --ink-soft: #5e534a;
+  --paper: #f3eee4;
+  --card: rgba(247, 244, 236, 0.78);
+  --line: #e3d8c8;
+  --clay: #c48472;
+  --clay-deep: #a86b5c;
+  position: relative;
+  z-index: 0;
+  min-height: 100svh;
+  background: var(--paper);
+  color: var(--ink);
+  color-scheme: light;
+  font-family: var(--font-karla), 'Karla', sans-serif;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+
+.listen-root ::selection {
+  background: rgba(90, 70, 50, 0.18);
+  color: var(--ink);
+}
+
+.listen-washes,
+.listen-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.listen-washes {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  animation: listen-drift 10s ease-in-out infinite alternate;
+}
+
+.listen-grain {
+  z-index: 1;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+}
+
+.listen-sheet {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 28.5rem);
+  margin: 0 auto;
+  padding: calc(1.75rem + env(safe-area-inset-top, 0px)) 1.75rem calc(2.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+.listen-kicker {
+  margin: 0;
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.listen-ticks {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listen-ticks li {
+  width: 1.15rem;
+  height: 2px;
+  background: rgba(60, 51, 43, 0.22);
+}
+
+.listen-ticks li[data-state='today'] {
+  height: 3px;
+  background: var(--ink);
+}
+
+.listen-ticks li[data-state='kept'] {
+  background: var(--ink);
+}
+
+.listen-frame {
+  width: min(100%, 17.75rem);
+  margin: 1.45rem auto 0;
+  padding: 0.55rem 0.55rem 0.8rem;
+  background: #f7f3ec;
+  box-shadow: 0 14px 30px rgba(80, 55, 30, 0.08);
+  transform: rotate(-0.4deg);
+}
+
+.listen-frame svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.listen-title {
+  margin: 1.45rem 0 0.65rem;
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.55rem, 10vw, 3.2rem);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.listen-title span {
+  display: block;
+}
+
+.listen-verse {
+  max-width: 18rem;
+  margin: 0 auto;
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.12rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.listen-player {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.45rem;
+}
+
+.listen-play {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.85rem;
+  height: 2.85rem;
+  border: 1.5px solid var(--ink) !important;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.listen-play svg {
+  display: block;
+}
+
+.listen-track {
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background: var(--ink);
+}
+
+.listen-knob {
+  position: absolute;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translate(-50%, -50%);
+}
+
+.listen-note,
+.listen-error {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.listen-error {
+  color: #6e3d32;
+}
+
+.listen-ring {
+  position: relative;
+  width: min(16.5rem, 78vw);
+  margin: 1.6rem auto 0;
+}
+
+.listen-ring svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.listen-ring-copy {
+  position: absolute;
+  inset: 22%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  text-align: center;
+  font-size: 1.02rem;
+  line-height: 1.35;
+}
+
+.listen-card {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  margin-top: 1.35rem;
+  padding: 0.95rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.listen-card.is-open,
+.listen-card.is-kept {
+  display: block;
+}
+
+.listen-card p {
+  margin: 0;
+}
+
+.listen-label {
+  font-size: 1rem;
+}
+
+.listen-question {
+  margin-top: 0.35rem !important;
+  font-size: 1.18rem;
+  line-height: 1.45;
+}
+
+.listen-kept {
+  margin-top: 0.55rem !important;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.listen-again {
+  margin-top: 0.9rem !important;
+  padding: 0;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.listen-talk {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 9.6rem;
+  height: 9.6rem;
+  margin: 1.35rem auto 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 32%, #d7a394 0%, var(--clay) 46%, var(--clay-deep) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 244, 0.45),
+    inset 0 -10px 18px rgba(110, 55, 40, 0.16),
+    0 12px 22px rgba(90, 50, 40, 0.1);
+  color: #4e332d;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.listen-talk svg {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.listen-talk span {
+  max-width: 7rem;
+  font-size: 0.92rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.listen-talk.is-recording {
+  animation: listen-breath 10s ease-in-out infinite;
+}
+
+.listen-alt,
+.listen-send,
+.listen-ghost {
+  font: inherit;
+}
+
+.listen-alt {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.35rem 0.5rem;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.listen-write {
+  margin-top: 1rem;
+}
+
+.listen-write label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.listen-write textarea {
+  width: 100%;
+  min-height: 7.25rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 252, 247, 0.55);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.listen-review {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.2rem;
+}
+
+.listen-send,
+.listen-ghost {
+  min-height: 3rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--ink) !important;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.listen-send:disabled,
+.listen-ghost:disabled,
+.listen-play:disabled,
+.listen-talk:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.listen-foot {
+  margin: 1.75rem 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.listen-audio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.listen-root :focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.listen-in {
+  animation: listen-in 1.4s ease both;
+}
+
+@keyframes listen-in {
+  from {
+    opacity: 0.72;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes listen-drift {
+  from {
+    transform: translate3d(0, -8px, 0);
+  }
+  to {
+    transform: translate3d(0, 10px, 0);
+  }
+}
+
+@keyframes listen-breath {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listen-washes,
+  .listen-talk.is-recording,
+  .listen-in {
+    animation: none;
+  }
+}
