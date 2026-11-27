@@ -119,6 +119,14 @@ export default async function OwnerClientsPage({
                 Lock list
               </button>
             </form>
+            <p className="text-sm text-white/70">
+              <a
+                href="/admin/clients/listening"
+                className="text-sacred-gold-light underline-offset-4 hover:underline"
+              >
+                Weekly listening notes
+              </a>
+            </p>
             {dayFailed ? (
               <p className="rounded-2xl border border-sacred-gold/30 bg-white/5 px-4 py-3 text-sm text-sacred-gold-light">
                 Could not save that day. Check that Redis is connected, then try again.
